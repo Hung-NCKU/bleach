@@ -47,7 +47,7 @@ namespace KidoTraining
             foreach (var material in materials)
             {
                 var texture = material.HasProperty("_MainTex") ? material.mainTexture : null;
-                if (texture != null && texture != Mats.GlowTex && texture != Mats.SoftTex && texture != Mats.WhiteTex && texture != Texture2D.whiteTexture)
+                if (texture != null && !EnvironmentArt.IsShared(texture) && texture != Mats.GlowTex && texture != Mats.SoftTex && texture != Mats.WhiteTex && texture != Texture2D.whiteTexture)
                     textures.Add(texture);
             }
             Release(root.gameObject);
@@ -187,19 +187,9 @@ namespace KidoTraining
             // 地面：砂土、石板廣場、訓練陣
             var dirt = Tex(256, 256, (x, y, r) => { float v = 0.88f + (float)r.NextDouble() * 0.12f; return new Color(0.74f * v, 0.64f * v, 0.5f * v); });
             Put(root, MeshGen.Builtin(PrimitiveType.Plane), Textured(dirt, new Vector2(80, 80), new Color(0.8f, 0.75f, 0.8f)), Vector3.zero, new Vector3(50, 1, 50), Quaternion.identity);
-            var stone = Tex(512, 512, (x, y, r) =>
-            {
-                const int s = 64;
-                int bx = x / s, by = y / s;
-                int ox = (by % 2) * (s / 2);
-                int lx = (x + ox) % s, ly = y % s;
-                if (lx < 2 || ly < 2) return new Color(0.49f, 0.49f, 0.51f);
-                var cell = new System.Random(((x + ox) / s) * 131 + by * 17);
-                float v = 0.69f + (float)cell.NextDouble() * 0.06f + (float)r.NextDouble() * 0.015f;
-                if (lx < 6 || ly < 6) v *= 0.93f;
-                return new Color(v, v * 0.975f, v * 0.94f);
-            });
-            Put(root, DiscUV(29, 96, 0.14f), Textured(stone, Vector2.one, new Color(0.78f, 0.76f, 0.86f)), new Vector3(0, 0.01f, 0), Vector3.one, Quaternion.identity);
+            var stoneMosaic = EnvironmentArt.Surface(EnvironmentArt.Paving, new Vector2(2.5f, 2.5f),
+                Spells.Hex(0xd8d2c5), new Color(0.78f, 0.76f, 0.86f));
+            Put(root, DiscUV(29, 96, 0.14f), stoneMosaic, new Vector3(0, 0.01f, 0), Vector3.one, Quaternion.identity);
             Put(root, MeshGen.Ring(5.8f, 6.15f, 96), Mats.Alpha(Spells.Hex(0x8a2a2a), 0.7f), new Vector3(0, 0.02f, 0), Vector3.one, Quaternion.identity, false);
             Put(root, MeshGen.Ring(1.2f, 1.35f, 64), Mats.Alpha(Spells.Hex(0x8a2a2a), 0.6f), new Vector3(0, 0.02f, 0), Vector3.one, Quaternion.identity, false);
             Put(root, MeshGen.Ring(28.6f, 29.4f, 128), Mats.Alpha(Spells.Hex(0x5a5048), 1), new Vector3(0, 0.02f, 0), Vector3.one, Quaternion.identity, false);
@@ -404,13 +394,8 @@ namespace KidoTraining
             Sun(Spells.Hex(0xc8d8ff), 0.9f, new Vector3(0.4f, -0.55f, 0.75f), 0.85f);
 
             // 白沙（風紋）
-            var sand = Tex(256, 256, (x, y, r) =>
-            {
-                float rip = Mathf.Sin((x * 0.2f + Mathf.Sin(y * 0.05f) * 6) ) * 0.04f;
-                float v = 0.86f + rip + (float)r.NextDouble() * 0.05f;
-                return new Color(v, v * 0.98f, v * 0.95f);
-            });
-            var sandM = Textured(sand, new Vector2(60, 60), new Color(0.55f, 0.6f, 0.85f));
+            var sandM = EnvironmentArt.Surface(EnvironmentArt.Sand, new Vector2(110, 110),
+                Spells.Hex(0xf5f3ef), new Color(0.55f, 0.6f, 0.85f));
             Put(root, MeshGen.Builtin(PrimitiveType.Plane), sandM, Vector3.zero, new Vector3(60, 1, 60), Quaternion.identity);
             Put(root, MeshGen.Ring(28.6f, 29.2f, 128), Mats.Alpha(Spells.Hex(0x9aa8d8), 0.35f), new Vector3(0, 0.02f, 0), Vector3.one, Quaternion.identity, false);
 

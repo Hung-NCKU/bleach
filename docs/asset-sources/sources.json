@@ -3,7 +3,7 @@
   "reviewedOn": "2026-10-18",
   "purpose": "Noncommercial research and learning; not a third-party asset license",
   "shareReference": "https://chatgpt.com/s/t_6ad3c36621b481918c6d97c4ee4b3f01",
-  "importedThirdPartyAssetCount": 0,
+  "importedThirdPartyAssetCount": 2,
   "sources": [
     {
       "id": "bbs-model-directory",
@@ -20,7 +20,11 @@
       "submitter": "Boxy",
       "url": "https://models.spriters-resource.com/pc_computer/bleachbravesouls/asset/356572/",
       "termsUrl": "https://models.spriters-resource.com/page/tou/",
-      "advertisedFormats": ["fbx", "dae", "png"],
+      "advertisedFormats": [
+        "fbx",
+        "dae",
+        "png"
+      ],
       "status": "not-downloaded-security-verification",
       "redistributionPermissionConfirmed": false,
       "assetsIncluded": false,
@@ -69,5 +73,6 @@
       "status": "reference-only",
       "assetsIncluded": false
     }
-  ]
+  ],
+  "importedAssetsManifest": "docs/asset-sources/imported-assets.json"
 }

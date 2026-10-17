@@ -5,6 +5,8 @@ Shader "Kido/Toon"
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Texture", 2D) = "white" {}
+        _TextureSaturation ("Texture Saturation", Range(0,1)) = 1
+        _TextureContrast ("Texture Contrast", Range(0,1)) = 1
         _ShadeColor ("Shade Tint", Color) = (0.72,0.68,0.8,1)
         _ShadeStep ("Shade Step", Range(-1,1)) = 0.05
         _Spec ("Hair Highlight", Range(0,1)) = 0
@@ -64,7 +66,7 @@ Shader "Kido/Toon"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
             fixed4 _Color, _ShadeColor, _Emission;
-            float _ShadeStep, _Spec, _Rim;
+            float _ShadeStep, _Spec, _Rim, _TextureSaturation, _TextureContrast;
             sampler2D _MainTex;
             float4 _MainTex_ST;
             struct v2f
@@ -96,7 +98,10 @@ Shader "Kido/Toon"
                 float sh = SHADOW_ATTENUATION(i);
                 // 二階明暗：亮部／帶色陰影，交界柔化
                 float lit = smoothstep(_ShadeStep - 0.04, _ShadeStep + 0.04, ndl) * smoothstep(0.3, 0.6, sh);
-                float3 albedo = _Color.rgb * tex2D(_MainTex, i.uv).rgb;
+                float3 texel = tex2D(_MainTex, i.uv).rgb;
+                texel = lerp(dot(texel, float3(0.2126, 0.7152, 0.0722)).xxx, texel, _TextureSaturation);
+                texel = lerp(float3(1, 1, 1), texel, _TextureContrast);
+                float3 albedo = _Color.rgb * texel;
                 float3 amb = ShadeSH9(float4(n, 1));
                 float3 shade = albedo * _ShadeColor.rgb * (0.55 + amb * 0.6);
                 float3 bright = albedo * (_LightColor0.rgb * 0.62 + amb * 0.22);

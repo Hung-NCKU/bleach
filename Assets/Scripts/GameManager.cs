@@ -81,6 +81,13 @@ namespace KidoTraining
             ShowPreviews(true);
         }
 
+        void Start()
+        {
+            // Lead with the campaign, while keeping the title available from the hub.
+            if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kido-title") < 0)
+                OpenStory();
+        }
+
         int portraitCursor;
         void OnDestroy()
         {
@@ -169,6 +176,9 @@ namespace KidoTraining
         {
             float dt = Mathf.Min(Time.deltaTime, 1 / 30f);
             voice.Update();
+            if (screen == Screen.Story && Input.GetKeyDown(KeyCode.Return)) OpenBriefing(campaign.Unlocked);
+            else if (screen == Screen.StoryBriefing && Input.GetKeyDown(KeyCode.Return) && selectedMission <= campaign.Unlocked) StartStory(selectedMission);
+            else if (screen == Screen.StoryBriefing && Input.GetKeyDown(KeyCode.Escape)) screen = Screen.Story;
             if ((screen == Screen.Title || screen == Screen.Select) && portraitCursor < CharacterDef.Roster.Length)
                 EnsurePortrait(CharacterDef.Roster[portraitCursor++]);
 
@@ -311,6 +321,8 @@ namespace KidoTraining
                 case Screen.Pause: DrawHud(); DrawPause(); break;
                 case Screen.Result: DrawHud(); DrawResult(); break;
             }
+            if (screen != Screen.Fight && screen != Screen.Pause && screen != Screen.Result)
+                GUI.Label(new Rect(24, 1035, W - 48, 30), "主線・開放素材整合版 2026.10.18  |  六篇章 / 21 關", sSmall);
         }
 
         void Dim(float a)
@@ -645,6 +657,9 @@ namespace KidoTraining
             Shadowed(new Rect(W / 2 - 100, 34, 200, 70), b.Practice ? "∞" : Mathf.CeilToInt(b.TimeLeft).ToString(), sH2, b.TimeLeft < 30 && !b.Practice ? new Color(1, 0.5f, 0.4f) : Color.white);
 
             if (b.Practice) GUI.Label(new Rect(W / 2 - 260, 135, 520, 36), "練習模式　R：立即重置對手與站位", sCenter);
+            else if (storyMode)
+                GUI.Label(new Rect(W / 2 - 470, 135, 940, 46), "主線 " + (storyMission + 1).ToString("00") + " / " + StoryCampaign.Missions.Length + "　" +
+                    StoryCampaign.Arcs[StoryCampaign.Missions[storyMission].Arc] + " · " + StoryCampaign.Missions[storyMission].Title, sCenter);
             // 連擊
             if (b.ComboCount >= 2 && b.ComboT > 0)
             {

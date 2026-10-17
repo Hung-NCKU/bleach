@@ -73,6 +73,15 @@ public static class GameChecks
         try
         {
             Mats.Init();
+            var groundTexture = EnvironmentArt.Sand;
+            var pavingTexture = EnvironmentArt.Paving;
+            foreach (var stage in new[] { Stage.Seireitei, Stage.HuecoMundo, Stage.Seireitei, Stage.HuecoMundo })
+            {
+                var arena = new Arena(host.transform, stage);
+                arena.Dispose();
+                Require(groundTexture != null && pavingTexture != null && EnvironmentArt.Sand == groundTexture && EnvironmentArt.Paving == pavingTexture,
+                    "Arena disposal destroyed a shared imported environment texture");
+            }
             battle = new Battle(host.transform, silent, CharacterDef.Ichigo, CharacterDef.Rukia, "dummy", false);
             battle.PlayerCast(new VoiceCaster.CastResult { Ok = true, SpellId = "test", Accuracy = 1, Completeness = 1 });
             Require(battle.Effects.Count == 0 && !Spells.Playable.Contains("test"), "Free test spell escaped into competitive/story play");
@@ -112,6 +121,7 @@ public static class GameChecks
             "PASS: voice analysis reused for 120 unchanged frames and invalidated on spell-list change/cancel\n" +
             "PASS: battle clock follows elapsed time; camera frames fighters 52m apart\n" +
             "PASS: model disposal releases generated geometry and preserves shared primitives\n" +
+            "PASS: imported CC0 environment textures survive four arena load/disposal cycles\n" +
             "PASS: free test spell excluded from competitive/story modes\n" +
             (baselineBytes > 0 ? "Pose interpolation allocation (1000 iterations): old=" + baselineBytes + " bytes; reused=" + reusedBytes + " bytes\n" :
                 "Allocation byte counter returned zero on this Mono runtime; no byte-reduction claim is made. Verified target reuse and equivalent interpolation output.\n") +

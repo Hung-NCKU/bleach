@@ -3,28 +3,30 @@ using UnityEngine;
 
 namespace KidoTraining
 {
-    // 用實際的 3D 模型拍一張頭像（只拍一次，存成 RenderTexture）
+    // Read back once before disposing the studio, then cache a GPU-only thumbnail.
     public static class Portraits
     {
         const int Layer = 30;
-        static readonly Dictionary<string, RenderTexture> cache = new Dictionary<string, RenderTexture>();
+        static readonly Dictionary<string, Texture2D> cache = new Dictionary<string, Texture2D>();
         public static void Clear()
         {
             foreach (var target in cache.Values)
-                if (target != null) { target.Release(); Object.Destroy(target); }
+                if (target != null) Release(target);
             cache.Clear();
         }
 
         public static Texture Get(CharacterDef ch)
         {
-            if (cache.TryGetValue(ch.Id, out var rt) && rt != null && rt.IsCreated()) return rt;
-            rt = new RenderTexture(320, 320, 24, RenderTextureFormat.ARGB32) { antiAliasing = 4 };
+            if (cache.TryGetValue(ch.Id, out var cached) && cached != null) return cached;
+            var rt = new RenderTexture(320, 320, 24, RenderTextureFormat.ARGB32) { antiAliasing = 1 };
             rt.Create();
 
             var holder = new GameObject("PortraitRig");
             holder.transform.position = new Vector3(0, -500, 0);
             var model = new FighterModel(ch, holder.transform);
-            model.Apply(Poses.Idle, 1);
+            // Lower the weapon so a large blade cannot obscure the face.
+            model.Apply(new Pose().Set(Jt.ArmR, 0.1f, 0, 0.15f).Set(Jt.ForeR, 0.1f, 0, 0)
+                .Set(Jt.ArmL, 0, 0, -0.13f), 1);
             foreach (var t in holder.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Layer;
 
             var headPos = model[Jt.Head].position + Vector3.up * 0.15f * model.Scale;
@@ -51,16 +53,28 @@ namespace KidoTraining
             lightGo.transform.rotation = Quaternion.LookRotation((-dir + Vector3.down * 0.6f + Vector3.right * 0.4f).normalized);
 
             bool fog = RenderSettings.fog;
+            var previous = RenderTexture.active;
             RenderSettings.fog = false;
             cam.Render();
+            RenderTexture.active = rt;
+            var portrait = new Texture2D(320, 320, TextureFormat.RGBA32, false) { name = ch.Id + " portrait" };
+            portrait.ReadPixels(new Rect(0, 0, 320, 320), 0, 0);
+            portrait.Apply(false, true);
+            RenderTexture.active = previous;
             RenderSettings.fog = fog;
 
+            cam.targetTexture = null;
+            rt.Release(); Release(rt);
             model.Dispose();
-            Object.Destroy(holder);
-            Object.Destroy(camGo);
-            Object.Destroy(lightGo);
-            cache[ch.Id] = rt;
-            return rt;
+            Release(holder);
+            Release(camGo);
+            Release(lightGo);
+            cache[ch.Id] = portrait;
+            return portrait;
+        }
+        static void Release(Object item)
+        {
+            if (Application.isPlaying) Object.Destroy(item); else Object.DestroyImmediate(item);
         }
     }
 }

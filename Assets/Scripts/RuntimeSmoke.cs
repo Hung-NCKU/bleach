@@ -48,7 +48,9 @@ namespace KidoTraining
                 "PASS: loss does not unlock a mission; smoke campaign is session-only\n" +
                 "PASS: no Error/Assert/Exception log entries\n" +
                 "Uniform/black captures omitted: " + omittedCaptures + "\n" +
-                "Scope: automated state checks; UI visual layout, microphone recognition and human input are not validated.\n");
+                "PASS: default launch enters campaign; locked briefing preview does not unlock combat\n" +
+                "PASS: all 21 missions start with their specified stage and opponent; final mission completes\n" +
+                "Scope: automated state checks; microphone recognition and human input are not validated. Screenshots require separate visual inspection.\n");
             Application.Quit(0);
         }
 
@@ -86,10 +88,18 @@ namespace KidoTraining
             Require(gm != null, "Bootstrap did not create GameManager");
             ((VoiceCaster)Field(gm, "voice")).Dispose(); Set(gm, "voice", new VoiceCaster(false));
             for (int i = 0; i < 36; i++) yield return null;
+            Require(Field(gm, "screen").ToString() == "Story", "Default startup did not enter the campaign");
+            Snapshot("UI-story-startup"); yield return new WaitForSecondsRealtime(0.3f);
+            Call(gm, "GoTitle");
             Snapshot("UI-title"); yield return new WaitForSecondsRealtime(0.3f);
             Call(gm, "OpenStory");
             var campaign = new CampaignProgress { SessionOnly = true };
             Set(gm, "campaign", campaign);
+            Call(gm, "OpenBriefing", StoryCampaign.Missions.Length - 1);
+            Require((int)Field(gm, "selectedMission") == StoryCampaign.Missions.Length - 1, "Locked briefing cannot be previewed");
+            Call(gm, "StartStory", StoryCampaign.Missions.Length - 1);
+            Require(Field(gm, "battle") == null && campaign.Unlocked == 0, "Locked preview unlocked combat");
+            Call(gm, "OpenStory"); Set(gm, "campaign", campaign);
             yield return null; Snapshot("UI-story"); yield return new WaitForSecondsRealtime(0.3f);
             Call(gm, "OpenBriefing", 0);
             yield return null; Snapshot("UI-briefing"); yield return new WaitForSecondsRealtime(0.3f);
@@ -108,6 +118,16 @@ namespace KidoTraining
             Snapshot("UI-defeat"); yield return new WaitForSecondsRealtime(0.3f);
             Call(gm, "StartStory", 1);
             Require((int)Field(gm, "storyMission") == 1 && !((Battle)Field(gm, "battle")).Over, "Retry failed");
+            for (int i = 1; i < StoryCampaign.Missions.Length; i++)
+            {
+                Call(gm, "StartStory", i);
+                battle = (Battle)Field(gm, "battle");
+                Require(battle.P2.Ch.Id == StoryCampaign.Missions[i].OpponentId &&
+                    (int)Field(gm, "stageIndex") == (int)StoryCampaign.Missions[i].Stage, "Wrong mission stage/opponent at " + i);
+                battle.OnKO(battle.P2);
+                yield return null;
+            }
+            Require(campaign.Cleared.Length == StoryCampaign.Missions.Length, "Campaign finale did not complete");
             Call(gm, "GoTitle");
             Require(Field(gm, "battle") == null && !(bool)Field(gm, "storyMode"), "Story state leaked into free battle");
             var screenType = typeof(GameManager).GetNestedType("Screen", BindingFlags.NonPublic);
