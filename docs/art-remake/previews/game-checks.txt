@@ -1,0 +1,8 @@
+PASS: 21 missions, unique IDs, referenced characters and progressive scaling
+PASS: sequential unlocking, duplicate completion and JSON save roundtrip
+PASS: voice analysis reused for 120 unchanged frames and invalidated on spell-list change/cancel
+PASS: battle clock follows elapsed time; camera frames fighters 52m apart
+PASS: model disposal releases generated geometry and preserves shared primitives
+PASS: free test spell excluded from competitive/story modes
+Allocation byte counter returned zero on this Mono runtime; no byte-reduction claim is made. Verified target reuse and equivalent interpolation output.
+This is an editor microbenchmark, not a measured game FPS result.

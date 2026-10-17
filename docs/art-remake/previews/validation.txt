@@ -1,0 +1,8 @@
+PASS: cloth vertices finite, indices valid, nonzero bounds
+PASS: five arenas and both animated character hierarchies constructed
+PASS: materials assigned; toon shader has no reported compiler errors
+PASS: nine 1600 x 1000 scene reference views exported
+PASS: 32 unique roster IDs; all joints and weapon anchors valid
+PASS: 32 individual character studies and a roster overview exported
+Unity 2022.3.50f1
+Scope: static editor rendering; gameplay, voice and animation transitions not tested here.

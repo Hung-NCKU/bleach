@@ -83,3 +83,10 @@
 要靠近參考圖的品質，仍須逐角手工雕塑頭型與髮片、重做人體與服裝拓撲、製作背面與側面細節、角色專屬武器／動作／能力，並逐場重建場景材質、建築細節與鏡頭。這些不能由目前的造型初版當作已完成。
 
 隱藏視窗中的 UI 自動截圖回傳黑畫面，已排除，不作為介面視覺驗收證據。Windows 自動流程驗證僅證明狀態轉換；編輯器離線渲染預覽則已逐項查看。
+
+## 可追溯的提交
+
+- [`9e6b230`](https://github.com/Hung-NCKU/bleach/commit/9e6b230)：布料、屋頂與卡通光影基礎。
+- [`6da5b2a`](https://github.com/Hung-NCKU/bleach/commit/6da5b2a)：32 個造型初版、5 個場景、主線、資源回收、語音／動畫／鏡頭改善與可重跑的驗證工具。
+
+驗證記錄：[場景與角色](previews/validation.txt)、[遊戲規則](previews/game-checks.txt)、[Windows 狀態流程](previews/runtime-checks.txt)。2026-10-18 已成功建置 Unity 2022.3.50f1 Windows Development 研究版。隱藏視窗的 7 張純黑截圖已刪除；沒有將它們當成視覺通過證據。

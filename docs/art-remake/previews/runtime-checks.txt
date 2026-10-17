@@ -1,0 +1,5 @@
+PASS: state transitions for title, story menu, briefing, fight, victory, next mission, defeat, retry, title and roster
+PASS: loss does not unlock a mission; smoke campaign is session-only
+PASS: no Error/Assert/Exception log entries
+Uniform/black captures omitted: 7
+Scope: automated state checks; UI visual layout, microphone recognition and human input are not validated.
