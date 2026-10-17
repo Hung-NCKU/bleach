@@ -3,14 +3,15 @@ using UnityEngine;
 
 namespace KidoTraining
 {
-    public enum Stage { Seireitei, HuecoMundo }
+    public enum Stage { Seireitei, HuecoMundo, Karakura, SoulPalace, HellGate }
 
     // 場景：瀞靈廷（白天：白牆黑瓦、城門、櫻花、石燈籠、懺罪宮與雙殛之丘）
     //       虛圈（夜晚：白沙沙漠、新月、石英枯樹、遠方的虛夜宮）
-    public class Arena
+    public partial class Arena
     {
-        public static readonly string[] StageNames = { "瀞靈廷", "虛圈" };
+        public static readonly string[] StageNames = { "瀞靈廷", "虛圈", "空座町", "靈王宮", "地獄門前" };
         readonly Transform root;
+        Material skyMaterial;
         readonly System.Random rng = new System.Random(3);
 
         public Arena(Transform parent, Stage stage)
@@ -21,10 +22,43 @@ namespace KidoTraining
             QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
             QualitySettings.shadowCascades = 2;
             QualitySettings.antiAliasing = 4;
-            if (stage == Stage.Seireitei) BuildSeireitei(); else BuildHuecoMundo();
+            switch (stage)
+            {
+                case Stage.Seireitei: BuildSeireitei(); break;
+                case Stage.HuecoMundo: BuildHuecoMundo(); break;
+                case Stage.Karakura: BuildKarakura(); break;
+                case Stage.SoulPalace: BuildSoulPalace(); break;
+                case Stage.HellGate: BuildHellGate(); break;
+            }
         }
 
-        public void Dispose() => Object.Destroy(root.gameObject);
+        public void Dispose()
+        {
+            if (root == null) return;
+            var meshes = new HashSet<Mesh>();
+            var materials = new HashSet<Material>();
+            var textures = new HashSet<Texture>();
+            foreach (var filter in root.GetComponentsInChildren<MeshFilter>(true))
+                if (filter.sharedMesh != null && !MeshGen.IsShared(filter.sharedMesh) && !ArtMeshes.IsShared(filter.sharedMesh)) meshes.Add(filter.sharedMesh);
+            foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
+                foreach (var material in renderer.sharedMaterials)
+                    if (material != null && !Mats.IsShared(material)) materials.Add(material);
+            if (skyMaterial != null) materials.Add(skyMaterial);
+            foreach (var material in materials)
+            {
+                var texture = material.HasProperty("_MainTex") ? material.mainTexture : null;
+                if (texture != null && texture != Mats.GlowTex && texture != Mats.SoftTex && texture != Mats.WhiteTex && texture != Texture2D.whiteTexture)
+                    textures.Add(texture);
+            }
+            Release(root.gameObject);
+            foreach (var mesh in meshes) Release(mesh);
+            foreach (var material in materials) Release(material);
+            foreach (var texture in textures) Release(texture);
+        }
+        static void Release(Object resource)
+        {
+            if (Application.isPlaying) Object.Destroy(resource); else Object.DestroyImmediate(resource);
+        }
 
         float Rand(float a, float b) => a + (float)rng.NextDouble() * (b - a);
 
@@ -85,6 +119,7 @@ namespace KidoTraining
         void Sky(Color top, Color mid, Color bottom, Color amb0, Color amb1, Color amb2, Color fog, float fogStart, float fogEnd)
         {
             var sky = Mats.Sky();
+            skyMaterial = sky;
             sky.SetColor("_Top", top); sky.SetColor("_Mid", mid); sky.SetColor("_Bottom", bottom);
             RenderSettings.skybox = sky;
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
@@ -146,7 +181,7 @@ namespace KidoTraining
         void BuildSeireitei()
         {
             Sky(Spells.Hex(0x2f6fd0), Spells.Hex(0xb8dcff), Spells.Hex(0xf0e4cc),
-                Spells.Hex(0xdfeaff), Spells.Hex(0xc8c0b0), Spells.Hex(0x8a7a60), Spells.Hex(0xcfdcec), 70, 230);
+                Spells.Hex(0xdfeaff), Spells.Hex(0xc8c0b0), Spells.Hex(0x8a7a60), Spells.Hex(0xcfdcec), 85, 340);
             Sun(Spells.Hex(0xfff2dc), 1.05f, new Vector3(-0.45f, -0.8f, -0.35f), 0.75f);
 
             // 地面：砂土、石板廣場、訓練陣
@@ -222,6 +257,17 @@ namespace KidoTraining
                 Box(g, lampM, new Vector3(0, 1.4f, 0), new Vector3(0.4f, 0.36f, 0.4f));
                 Put(g, MeshGen.Frustum(0.02f, 0.56f, 0.32f, 6), stoneM, new Vector3(0, 1.74f, 0), Vector3.one, Quaternion.identity);
                 Put(g, MeshGen.Sphere(), stoneM, new Vector3(0, 1.93f, 0), Vector3.one * 0.14f, Quaternion.identity);
+            }
+
+            // Cut-stone drainage channels and raised borders frame the court without obstructing combat.
+            var curb = Mats.Toon(Spells.Hex(0x777a83), 0.008f);
+            for (int i = 0; i < 96; i++)
+            {
+                float a = i * 360f / 96;
+                var dir = Quaternion.Euler(0, a, 0) * Vector3.forward;
+                var g = Group("Court curb", dir * 29.8f, a);
+                Box(g, curb, new Vector3(0, 0.09f, 0), new Vector3(1.86f, 0.18f, 0.48f));
+                Box(g, wood, new Vector3(0, 0.025f, 0.38f), new Vector3(1.8f, 0.025f, 0.16f));
             }
 
             // 櫻花樹
@@ -326,9 +372,9 @@ namespace KidoTraining
                 var br = Put(t, MeshGen.Lathe(new[] { 1.6f, 0 }, new[] { 0.05f, 0.1f }, 8), bark, new Vector3(0, h * 0.75f, 0), Vector3.one, Quaternion.FromToRotation(Vector3.up, dir));
                 var tip = new Vector3(0, h * 0.75f, 0) + dir.normalized * 1.6f;
                 for (int k = 0; k < 3; k++)
-                    Put(t, MeshGen.Sphere(), k == 0 ? bloom2 : bloom, tip + new Vector3(Rand(-0.6f, 0.6f), Rand(-0.2f, 0.5f), Rand(-0.6f, 0.6f)), Vector3.one * Rand(1.4f, 2.2f), Quaternion.identity);
+                    Put(t, ArtMeshes.BlossomCanopy(), k == 0 ? bloom2 : bloom, tip + new Vector3(Rand(-0.6f, 0.6f), Rand(-0.2f, 0.5f), Rand(-0.6f, 0.6f)), Vector3.one * Rand(1.4f, 2.2f), Quaternion.identity);
             }
-            Put(t, MeshGen.Sphere(), bloom, new Vector3(0, h + 0.6f, 0), Vector3.one * 2.6f, Quaternion.identity);
+            Put(t, ArtMeshes.BlossomCanopy(), bloom, new Vector3(0, h + 0.6f, 0), Vector3.one * 2.6f, Quaternion.identity);
         }
 
         static Texture2D CloudTex()
@@ -354,7 +400,7 @@ namespace KidoTraining
         void BuildHuecoMundo()
         {
             Sky(Spells.Hex(0x04050c), Spells.Hex(0x1c2440), Spells.Hex(0x0c0e18),
-                Spells.Hex(0x5a6a9a), Spells.Hex(0x3a4466), Spells.Hex(0x2a2a3a), Spells.Hex(0x141a2c), 60, 220);
+                Spells.Hex(0x5a6a9a), Spells.Hex(0x3a4466), Spells.Hex(0x2a2a3a), Spells.Hex(0x141a2c), 110, 430);
             Sun(Spells.Hex(0xc8d8ff), 0.9f, new Vector3(0.4f, -0.55f, 0.75f), 0.85f);
 
             // 白沙（風紋）
@@ -373,7 +419,7 @@ namespace KidoTraining
             for (int i = 0; i < 22; i++)
             {
                 float a = Rand(0, 360), d = Rand(45, 140);
-                Put(root, MeshGen.SphereGrid(1, 24, 10, 0, Mathf.PI / 2, -Mathf.PI, Mathf.PI), duneM,
+                Put(root, ArtMeshes.WindDune(), duneM,
                     Quaternion.Euler(0, a, 0) * Vector3.forward * d, new Vector3(Rand(15, 35), Rand(3, 9), Rand(10, 22)), Quaternion.Euler(0, Rand(0, 180), 0));
             }
 
@@ -391,6 +437,20 @@ namespace KidoTraining
                 float a = i / 14f * 360 + Rand(-8, 8);
                 var p = Quaternion.Euler(0, a, 0) * Vector3.forward * Rand(31, 34);
                 Put(root, MeshGen.Frustum(Rand(0.3f, 0.8f), Rand(1.2f, 2f), 1, 6), rock, p + Vector3.up * 0, new Vector3(1, Rand(3, 7), 1), Quaternion.Euler(Rand(-8, 8), Rand(0, 60), Rand(-8, 8)));
+            }
+
+            // Broken quartz monuments give the middle distance a readable silhouette.
+            for (int i = 0; i < 9; i++)
+            {
+                float a = 20 + i * 39;
+                var g = Group("Quartz ruins", Quaternion.Euler(0, a, 0) * Vector3.forward * Rand(42, 65), a);
+                Box(g, rock, new Vector3(0, 0.35f, 0), new Vector3(5, 0.7f, 4));
+                foreach (int side in new[] { -1, 1 })
+                {
+                    float h = Rand(4, 9);
+                    Box(g, quartz, new Vector3(side * 1.6f, h / 2, 0), new Vector3(0.8f, h, 0.8f), Quaternion.Euler(0, 0, side * 5));
+                }
+                Box(g, rock, new Vector3(0, 0.8f, 1.8f), new Vector3(3, 0.5f, 0.8f), Quaternion.Euler(0, 25, 12));
             }
 
             // 虛夜宮：巨大圓頂與高塔

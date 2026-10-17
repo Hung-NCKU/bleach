@@ -9,6 +9,11 @@ namespace KidoTraining
         static Shader toon, glow, alpha, sky;
         static readonly Dictionary<string, Material> toonCache = new Dictionary<string, Material>();
         public static Texture2D GlowTex, SoftTex, WhiteTex;
+        public static bool IsShared(Material material)
+        {
+            foreach (var item in toonCache.Values) if (item == material) return true;
+            return false;
+        }
 
         public static void Init()
         {
@@ -19,8 +24,8 @@ namespace KidoTraining
             if (toon == null) toon = Shader.Find("Standard");
             if (glow == null) glow = Shader.Find("Sprites/Default");
             if (alpha == null) alpha = Shader.Find("Sprites/Default");
-            GlowTex = Radial(64, new[] { 0f, 0.25f, 1f }, new[] { 1f, 0.8f, 0f });
-            SoftTex = Radial(64, new[] { 0f, 1f }, new[] { 0.6f, 0f });
+            if (GlowTex == null) GlowTex = Radial(64, new[] { 0f, 0.25f, 1f }, new[] { 1f, 0.8f, 0f });
+            if (SoftTex == null) SoftTex = Radial(64, new[] { 0f, 1f }, new[] { 0.6f, 0f });
             WhiteTex = Texture2D.whiteTexture;
         }
 

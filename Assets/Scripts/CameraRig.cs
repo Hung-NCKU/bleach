@@ -26,7 +26,9 @@ namespace KidoTraining
             // 選擇離目前鏡頭較近的一側，避免鏡頭翻轉
             var cur = pos - mid; cur.y = 0;
             if (Vector3.Dot(cur, perp * side) < -2f) side = -side;
-            float d = Mathf.Clamp(6.5f + dist * 0.75f, 7.5f, 22f);
+            float halfHorizontal = Mathf.Tan(Cam.fieldOfView * Mathf.Deg2Rad * 0.5f) * Mathf.Max(0.5f, Cam.aspect);
+            float framing = (dist * 0.5f + 2) / halfHorizontal * 1.25f;
+            float d = Mathf.Clamp(Mathf.Max(6.5f + dist * 0.75f, framing), 7.5f, 80f);
             // 稍微偏向玩家背後，營造終極風暴的斜側視角
             var want = mid + perp * side * d - axis * (d * 0.28f) + Vector3.up * (2.6f + dist * 0.12f + Mathf.Max(a.Pos.y, b.Pos.y) * 0.5f);
             var wantLook = mid + Vector3.up * (1.1f + Mathf.Max(a.Pos.y, b.Pos.y) * 0.4f);

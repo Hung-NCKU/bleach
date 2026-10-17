@@ -451,6 +451,7 @@ namespace KidoTraining
 
         // ── 動畫 ──
         float lie;
+        readonly Pose animationPose = new Pose();
         void Animate(float dt)
         {
             var root = Model.Root;
@@ -470,7 +471,7 @@ namespace KidoTraining
                 case FState.Run:
                 {
                     float s = Mathf.Sin(t * 13);
-                    pose = (Chanting ? Poses.Chant : new Pose()).Clone();
+                    pose = Chanting ? animationPose.CopyFrom(Poses.Chant) : animationPose.Clear();
                     pose.Set(Jt.LegL, s * 0.8f, 0, 0).Set(Jt.LegR, -s * 0.8f, 0, 0)
                         .Set(Jt.ShinL, Mathf.Max(0, -s) * 1.1f, 0, 0).Set(Jt.ShinR, Mathf.Max(0, s) * 1.1f, 0, 0).Set(Jt.Torso, 0.3f, 0, 0);
                     if (!Chanting) pose.Set(Jt.ArmL, s * 0.6f + 0.6f, 0, -0.2f).Set(Jt.ArmR, 0.9f, 0, 0.3f).Set(Jt.ForeR, -0.3f, 0, 0);
@@ -487,8 +488,8 @@ namespace KidoTraining
                 case FState.Chant: pose = Poses.Chant; break;
                 case FState.Hit: pose = Poses.Hit; k = Mathf.Min(1, dt * 25); break;
                 case FState.Bound:
-                    pose = BindArmsBack ? Poses.Bound.Clone().Set(Jt.ArmL, 0.5f, 0, 0.3f).Set(Jt.ArmR, 0.5f, 0, -0.3f)
-                        : SleepBind ? Poses.Bound.Clone().Set(Jt.Head, 0.55f, 0, 0.2f).Set(Jt.Torso, 0.15f, 0, 0) : Poses.Bound;
+                    pose = BindArmsBack ? animationPose.CopyFrom(Poses.Bound).Set(Jt.ArmL, 0.5f, 0, 0.3f).Set(Jt.ArmR, 0.5f, 0, -0.3f)
+                        : SleepBind ? animationPose.CopyFrom(Poses.Bound).Set(Jt.Head, 0.55f, 0, 0.2f).Set(Jt.Torso, 0.15f, 0, 0) : Poses.Bound;
                     k = Mathf.Min(1, dt * 20);
                     break;
                 case FState.Down:
@@ -498,12 +499,12 @@ namespace KidoTraining
                 {
                     var c = Combo[combo];
                     float p = Mathf.Min(1, StateT / c.Active);
-                    pose = Pose.Mix(Poses.AtkA[combo], Poses.AtkB[combo], p * p);
+                    pose = animationPose.BlendFrom(Poses.AtkA[combo], Poses.AtkB[combo], p * p);
                     k = Mathf.Min(1, dt * 30);
                     break;
                 }
                 case FState.AirAttack:
-                    pose = Pose.Mix(Poses.AtkA[3], Poses.AtkB[3], Mathf.Min(1, StateT / 0.14f));
+                    pose = animationPose.BlendFrom(Poses.AtkA[3], Poses.AtkB[3], Mathf.Min(1, StateT / 0.14f));
                     k = Mathf.Min(1, dt * 30);
                     break;
             }

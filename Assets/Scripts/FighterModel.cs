@@ -11,6 +11,13 @@ namespace KidoTraining
         public readonly Vector3[] R = new Vector3[11];
         public Pose Set(Jt j, float x, float y, float z) { R[(int)j] = new Vector3(x, y, z); return this; }
         public Pose Clone() { var p = new Pose(); System.Array.Copy(R, p.R, R.Length); return p; }
+        public Pose CopyFrom(Pose source) { System.Array.Copy(source.R, R, R.Length); return this; }
+        public Pose Clear() { System.Array.Clear(R, 0, R.Length); return this; }
+        public Pose BlendFrom(Pose a, Pose b, float t)
+        {
+            for (int i = 0; i < R.Length; i++) R[i] = Vector3.Lerp(a.R[i], b.R[i], t);
+            return this;
+        }
 
         public static Pose Mix(Pose a, Pose b, float t)
         {
@@ -27,6 +34,7 @@ namespace KidoTraining
         public readonly Transform[] J = new Transform[11];
         public Transform HandR, HandL;
         public float Scale;
+        Texture2D ownedFace;
 
         public Transform this[Jt j] => J[(int)j];
 
@@ -85,7 +93,7 @@ namespace KidoTraining
 
         public FighterModel(CharacterDef ch, Transform parent)
         {
-            bool ichigo = ch.Id == "ichigo";
+            bool ichigo = ch.Id == "ichigo" || ch.Id == "ichigo_bankai";
             var skinShade = new Color(1f, 0.78f, 0.74f);
             var skin = Mats.Toon(ch.Skin, 0.008f, 0, skinShade, 0.2f);
             var skinFlat = Mats.Toon(ch.Skin, 0, 0, skinShade, 0.1f);
@@ -95,6 +103,9 @@ namespace KidoTraining
             var hairM = Mats.Toon(ch.Hair, 0.01f, 0.8f, ichigo ? new Color(0.92f, 0.55f, 0.42f) : new Color(0.55f, 0.58f, 0.85f), 0.45f);
             var sandal = Mats.Toon(Spells.Hex(0xc8a26a), 0.006f);
             var dark = Mats.Toon(Spells.Hex(0x2a2a2e), 0);
+            bool modernClothes = ch.Id == "uryu" || ch.Id == "chad" || ch.Id == "yoruichi";
+            bool bareArms = ch.Id == "yoruichi" || ch.Id == "soifon" || ch.Id == "chad";
+            var trousers = modernClothes && ch.Id != "uryu" ? Mats.Toon(Spells.Hex(0x1b2430), 0.006f) : robe;
 
             Root = new GameObject(ch.Name).transform;
             Root.SetParent(parent, false);
@@ -104,7 +115,7 @@ namespace KidoTraining
             J[(int)Jt.Hips] = Joint(body, "hips", 0, 0.98f, 0);
             var hips = this[Jt.Hips];
             Part(hips, MeshGen.Lathe(new[] { 0.07f, 0f }, new[] { 0.172f, 0.176f }, 24, 0.82f), white, Vector3.zero);
-            Part(hips, ArtMeshes.Cloth(new[] { 0.02f, -0.08f, -0.18f, -0.27f }, new[] { 0.175f, 0.19f, 0.215f, 0.23f }, 0.8f, 10, 0.012f), robe, Vector3.zero);
+            if (!modernClothes) Part(hips, ArtMeshes.Cloth(new[] { 0.02f, -0.08f, -0.18f, -0.27f }, new[] { 0.175f, 0.19f, 0.215f, 0.23f }, 0.8f, 10, 0.012f), robe, Vector3.zero);
 
             // ── 軀幹：死霸裝＋交疊的白色衣領 ──
             J[(int)Jt.Torso] = Joint(hips, "torso", 0, 0.06f, 0);
@@ -172,7 +183,8 @@ namespace KidoTraining
             Part(head, MeshGen.Lathe(new[] { 0.1f, -0.02f }, new[] { 0.048f, 0.055f }, 12), skin, Vector3.zero);
             Part(head, MeshGen.SphereGrid(HR, 32, 24, 0, Mathf.PI, -Mathf.PI, Mathf.PI, HeadDeform), skin, hc);
             var face = MeshGen.SphereGrid(HR * 1.012f, 28, 22, 50 * Mathf.Deg2Rad, 140 * Mathf.Deg2Rad, -60 * Mathf.Deg2Rad, 60 * Mathf.Deg2Rad, HeadDeform);
-            var faceGo = Mats.Obj("face", face, Mats.Alpha(Color.white, 1, FaceTex.Build(ch)), head, false);
+            ownedFace = FaceTex.Build(ch);
+            var faceGo = Mats.Obj("face", face, Mats.Alpha(Color.white, 1, ownedFace), head, false);
             faceGo.transform.localPosition = hc;
             foreach (int s in new[] { -1, 1 })
                 Part(head, MeshGen.Sphere(), skin, hc + new Vector3(0.127f * s, -0.005f, -0.01f), new Vector3(0.03f, 0.055f, 0.035f), Quaternion.identity);
@@ -184,7 +196,8 @@ namespace KidoTraining
                 Part(head, MeshGen.Strand(origin, p1, p2, r, flat, radial), hairM, Vector3.zero);
             }
 
-            if (ichigo)
+            if (CharacterArt.CustomHair(ch)) CharacterArt.Hair(ch, head, hc, hairM);
+            else if (ichigo)
             {
                 // 橘色刺蝟頭：向上、向後炸開
                 Part(head, MeshGen.SphereGrid(0.142f, 28, 12, 0, 1.25f, -Mathf.PI, Mathf.PI), hairM, hc);
@@ -255,11 +268,19 @@ namespace KidoTraining
             foreach (int s in new[] { -1, 1 })
             {
                 var arm = Joint(torso, s < 0 ? "armL" : "armR", 0.215f * s, 0.44f, 0);
-                Part(arm, ArtMeshes.Cloth(new[] { 0.04f, -0.06f, -0.17f, -0.28f }, new[] { 0.08f, 0.092f, 0.103f, 0.11f }, 0.85f, 6, 0.006f), robe, Vector3.zero);
+                if (bareArms)
+                    Part(arm, MeshGen.Lathe(new[] { 0.04f, -0.1f, -0.28f }, new[] { 0.055f, 0.058f, 0.043f }, 24), skin, Vector3.zero);
+                else
+                    Part(arm, ArtMeshes.Cloth(new[] { 0.04f, -0.06f, -0.17f, -0.28f }, new[] { 0.08f, 0.092f, 0.103f, 0.11f }, 0.85f, 6, 0.006f), robe, Vector3.zero);
                 var fore = Joint(arm, "fore", 0, -0.27f, 0);
-                Part(fore, ArtMeshes.Cloth(new[] { 0.04f, -0.04f, -0.14f, -0.22f }, new[] { 0.105f, 0.12f, 0.13f, 0.125f }, 0.8f, 6, 0.009f), robe, Vector3.zero);
-                Part(fore, MeshGen.Torus(0.12f, 0.004f, 6, 48), white, new Vector3(0, -0.215f, 0), new Vector3(1, 0.8f, 1), Quaternion.Euler(90, 0, 0));
-                Part(fore, MeshGen.Lathe(new[] { -0.12f, -0.25f }, new[] { 0.036f, 0.031f }, 10), skin, Vector3.zero);
+                if (bareArms)
+                    Part(fore, MeshGen.Lathe(new[] { 0.04f, -0.08f, -0.25f }, new[] { 0.043f, 0.05f, 0.031f }, 24), skin, Vector3.zero);
+                else
+                {
+                    Part(fore, ArtMeshes.Cloth(new[] { 0.04f, -0.04f, -0.14f, -0.22f }, new[] { 0.105f, 0.12f, 0.13f, 0.125f }, 0.8f, 6, 0.009f), robe, Vector3.zero);
+                    Part(fore, MeshGen.Torus(0.12f, 0.004f, 6, 48), white, new Vector3(0, -0.215f, 0), new Vector3(1, 0.8f, 1), Quaternion.Euler(90, 0, 0));
+                    Part(fore, MeshGen.Lathe(new[] { -0.12f, -0.25f }, new[] { 0.036f, 0.031f }, 10), skin, Vector3.zero);
+                }
                 var hand = Joint(fore, "hand", 0, -0.26f, 0);
                 Part(hand, MeshGen.Sphere(), skin, new Vector3(0, -0.035f, 0), new Vector3(0.075f, 0.095f, 0.05f), Quaternion.identity);
                 Part(hand, MeshGen.Lathe(new[] { 0.03f, -0.03f }, new[] { 0.016f, 0.012f }, 8), skin, new Vector3(0.032f * -s, -0.02f, 0.022f), Vector3.one, Quaternion.Euler(30, 0, 25 * s));
@@ -272,9 +293,9 @@ namespace KidoTraining
             foreach (int s in new[] { -1, 1 })
             {
                 var leg = Joint(hips, s < 0 ? "legL" : "legR", 0.1f * s, -0.1f, 0);
-                Part(leg, ArtMeshes.Cloth(new[] { 0.02f, -0.1f, -0.26f, -0.45f }, new[] { 0.13f, 0.155f, 0.166f, 0.17f }, 0.9f, 7, 0.016f), robe, Vector3.zero);
+                Part(leg, ArtMeshes.Cloth(new[] { 0.02f, -0.1f, -0.26f, -0.45f }, new[] { 0.13f, 0.155f, 0.166f, 0.17f }, 0.9f, 7, 0.016f), trousers, Vector3.zero);
                 var shin = Joint(leg, "shin", 0, -0.44f, 0);
-                Part(shin, ArtMeshes.Cloth(new[] { 0.03f, -0.09f, -0.22f, -0.33f }, new[] { 0.17f, 0.18f, 0.185f, 0.175f }, 0.9f, 7, 0.019f), robe, Vector3.zero);
+                Part(shin, ArtMeshes.Cloth(new[] { 0.03f, -0.09f, -0.22f, -0.33f }, new[] { 0.17f, 0.18f, 0.185f, 0.175f }, 0.9f, 7, 0.019f), trousers, Vector3.zero);
                 Part(shin, MeshGen.Lathe(new[] { -0.26f, -0.38f }, new[] { 0.045f, 0.05f }, 10), white, Vector3.zero);
                 Part(shin, MeshGen.Sphere(), white, new Vector3(0, -0.385f, 0.05f), new Vector3(0.1f, 0.065f, 0.22f), Quaternion.identity);
                 Part(shin, MeshGen.Cube(), sandal, new Vector3(0, -0.42f, 0.05f), new Vector3(0.105f, 0.025f, 0.25f), Quaternion.identity);
@@ -333,6 +354,8 @@ namespace KidoTraining
                 Part(saya, MeshGen.Torus(0.028f, 0.006f, 4, 12), Mats.Toon(Spells.Hex(0x8a7440), 0), new Vector3(0, -0.4f, 0), Vector3.one, Quaternion.Euler(90, 0, 0));
             }
 
+            CharacterArt.Details(ch, this, sword);
+
             Part(hips, MeshGen.Sphere(), white, new Vector3(0.03f, 0.035f, 0.155f),
                 new Vector3(0.075f, 0.05f, 0.045f), Quaternion.identity);
             foreach (int side in new[] { -1, 1 })
@@ -354,6 +377,25 @@ namespace KidoTraining
         }
 
         Renderer[] renderers;
+        public void Dispose()
+        {
+            if (Root == null) return;
+            var meshes = new HashSet<Mesh>();
+            var materials = new HashSet<Material>();
+            foreach (var filter in Root.GetComponentsInChildren<MeshFilter>(true))
+                if (filter.sharedMesh != null && !MeshGen.IsShared(filter.sharedMesh)) meshes.Add(filter.sharedMesh);
+            foreach (var renderer in Root.GetComponentsInChildren<Renderer>(true))
+                foreach (var material in renderer.sharedMaterials)
+                    if (material != null && !Mats.IsShared(material)) materials.Add(material);
+            DestroyOwned(Root.gameObject);
+            foreach (var mesh in meshes) DestroyOwned(mesh);
+            foreach (var material in materials) DestroyOwned(material);
+            if (ownedFace != null) DestroyOwned(ownedFace);
+        }
+        static void DestroyOwned(Object item)
+        {
+            if (Application.isPlaying) Object.Destroy(item); else Object.DestroyImmediate(item);
+        }
         bool visible = true;
         public void SetVisible(bool v)
         {

@@ -8,6 +8,12 @@ namespace KidoTraining
     {
         const int Layer = 30;
         static readonly Dictionary<string, RenderTexture> cache = new Dictionary<string, RenderTexture>();
+        public static void Clear()
+        {
+            foreach (var target in cache.Values)
+                if (target != null) { target.Release(); Object.Destroy(target); }
+            cache.Clear();
+        }
 
         public static Texture Get(CharacterDef ch)
         {
@@ -49,6 +55,7 @@ namespace KidoTraining
             cam.Render();
             RenderSettings.fog = fog;
 
+            model.Dispose();
             Object.Destroy(holder);
             Object.Destroy(camGo);
             Object.Destroy(lightGo);

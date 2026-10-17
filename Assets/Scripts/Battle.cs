@@ -74,10 +74,11 @@ namespace KidoTraining
         {
             foreach (var e in Effects) e.Dispose();
             Effects.Clear();
+            P1.Model.Dispose(); P2.Model.Dispose();
             Object.Destroy(Root.gameObject);
         }
 
-        public void Update(float dt, Intent playerIntent)
+        public void Update(float dt, Intent playerIntent, float clockDt = -1)
         {
             dt *= SlowMo;
             float fdt = dt;
@@ -114,7 +115,7 @@ namespace KidoTraining
             }
             else if (!Over)
             {
-                TimeLeft -= dt;
+                TimeLeft -= clockDt >= 0 ? clockDt : dt;
                 if (TimeLeft <= 0) { TimeLeft = 0; Over = true; KnockedOut?.Invoke(P1.Hp / P1.MaxHp >= P2.Hp / P2.MaxHp ? P2 : P1); }
             }
         }
@@ -130,6 +131,7 @@ namespace KidoTraining
                 return;
             }
             var s = Spells.All[res.SpellId];
+            if (s.TestOnly && !Practice) { Notice(P1, "測試招式限設定與練習模式使用", true); return; }
             if (!P1.CanCast)
             {
                 Notice(P1, P1.State == FState.Bound ? "被束縛，無法施放" : "現在無法施放", true);

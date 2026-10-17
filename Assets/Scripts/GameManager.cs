@@ -15,9 +15,9 @@ namespace KidoTraining
         }
     }
 
-    public class GameManager : MonoBehaviour
+    public partial class GameManager : MonoBehaviour
     {
-        enum Screen { Title, Select, Book, Howto, Settings, Fight, Pause, Result }
+        enum Screen { Title, Select, Book, Howto, Settings, Fight, Pause, Result, Story, StoryBriefing }
 
         Screen screen = Screen.Title, bookReturn = Screen.Title;
         Camera cam;
@@ -44,7 +44,8 @@ namespace KidoTraining
         const float PopDur = 3.2f;
         Texture2D texBurst;
         float resultDelay = -1; Fighter loser;
-        Vector2 bookScroll;
+        Vector2 bookScroll, rosterScroll;
+        bool selectOpponent;
         readonly Dictionary<string, Texture> portraits = new Dictionary<string, Texture>();
 
         // 戰績
@@ -74,18 +75,29 @@ namespace KidoTraining
             rig = new CameraRig(cam);
 
             arena = new Arena(world, Stage.Seireitei);
-            foreach (var ch in CharacterDef.Roster) portraits[ch.Id] = Portraits.Get(ch);
+            // Generate one portrait per menu frame instead of blocking startup on the whole roster.
             voice = new VoiceCaster();
             voice.OnCast = res => { if (battle != null && screen == Screen.Fight) battle.PlayerCast(res); };
             ShowPreviews(true);
         }
 
-        void OnDestroy() => voice?.Dispose();
+        int portraitCursor;
+        void OnDestroy()
+        {
+            voice?.Dispose(); battle?.Dispose();
+            foreach (var preview in previews) preview.Dispose();
+            arena?.Dispose(); Portraits.Clear();
+            if (world != null) Destroy(world.gameObject);
+        }
+        void EnsurePortrait(CharacterDef ch)
+        {
+            if (!portraits.ContainsKey(ch.Id)) portraits[ch.Id] = Portraits.Get(ch);
+        }
 
         // ── 預覽模型（標題／選角） ──
         void ShowPreviews(bool on)
         {
-            foreach (var p in previews) Destroy(p.Root.gameObject);
+            foreach (var p in previews) p.Dispose();
             previews.Clear();
             if (!on) return;
             var a = new FighterModel(CharacterDef.Roster[p1Index], world);
@@ -101,18 +113,22 @@ namespace KidoTraining
         {
             practice = isPractice;
             ShowPreviews(false);
+            EnsurePortrait(CharacterDef.Roster[p1Index]);
+            EnsurePortrait(CharacterDef.Roster[p2Index]);
             battle?.Dispose();
-            battle = new Battle(world, voice, CharacterDef.Roster[p1Index], CharacterDef.Roster[p2Index], DiffKeys[diffIndex], practice);
+            var opponent = storyMode ? StoryCampaign.Opponent(storyMission) : CharacterDef.Roster[p2Index];
+            battle = new Battle(world, voice, CharacterDef.Roster[p1Index], opponent,
+                storyMode ? StoryCampaign.Difficulty(storyMission) : DiffKeys[diffIndex], practice);
             battle.Noticed = (f, text, bad) => AddFloater(f.Pos + Vector3.up * 2.4f * f.S, text, bad ? new Color(1, 0.55f, 0.55f) : new Color(0.5f, 1, 0.8f), 22);
             battle.Damaged = (f, dmg, big) => AddFloater(f.Center + Random.insideUnitSphere * 0.3f, dmg.ToString("0"), big ? new Color(1, 0.8f, 0.3f) : Color.white, big ? 40 : 28);
             battle.CastShown = OnCastShown;
             battle.Flashed = (c, a) => { flashColor = c; flashA = a; };
-            battle.KnockedOut = f => { loser = f; resultDelay = 2.5f; ShowBanner(practice ? "" : "決著", 2.5f); };
+            battle.KnockedOut = f => { RecordStoryVictory(f); loser = f; resultDelay = 2.5f; ShowBanner(practice ? "" : "決著", 2.5f); };
             castCount = perfectCount = 0; bestMult = accSum = 0;
             p1Lag = p2Lag = 1;
             floaters.Clear();
             popT = 0; resultDelay = -1;
-            voice.SetSpells(Spells.Every);
+            voice.SetSpells(practice ? Spells.Every : Spells.Playable);
             voice.Cancel();
             screen = Screen.Fight;
             ShowBanner(practice ? "鬼道練習" : "開始！", 1.4f);
@@ -153,6 +169,8 @@ namespace KidoTraining
         {
             float dt = Mathf.Min(Time.deltaTime, 1 / 30f);
             voice.Update();
+            if ((screen == Screen.Title || screen == Screen.Select) && portraitCursor < CharacterDef.Roster.Length)
+                EnsurePortrait(CharacterDef.Roster[portraitCursor++]);
 
             if (Input.GetKeyDown(KeyCode.F1)) showVoiceDebug = !showVoiceDebug;
 
@@ -166,7 +184,8 @@ namespace KidoTraining
             {
                 case Screen.Fight:
                     if (InputMap.Pause && resultDelay < 0) { screen = Screen.Pause; voice.Cancel(); break; }
-                    battle.Update(dt, InputMap.Read(cam.transform));
+                    if (battle.Practice && Input.GetKeyDown(KeyCode.R)) { StartMatch(true); break; }
+                    battle.Update(dt, InputMap.Read(cam.transform), Time.deltaTime);
                     rig.Update(battle.P1, battle.P2, dt, battle.Shake);
                     if (resultDelay >= 0)
                     {
@@ -207,6 +226,7 @@ namespace KidoTraining
         void GoTitle()
         {
             EndMatch();
+            storyMode = false; storyMission = -1;
             screen = Screen.Title;
             ShowPreviews(true);
         }
@@ -282,6 +302,8 @@ namespace KidoTraining
             {
                 case Screen.Title: DrawTitle(); break;
                 case Screen.Select: DrawSelect(); break;
+                case Screen.Story: DrawStory(); break;
+                case Screen.StoryBriefing: DrawStoryBriefing(); break;
                 case Screen.Book: DrawBook(); break;
                 case Screen.Howto: DrawHowto(); break;
                 case Screen.Settings: DrawSettings(); break;
@@ -358,12 +380,13 @@ namespace KidoTraining
                 y += 80;
             }
             float bw = 380, bx = W / 2 - bw / 2;
-            if (Button(new Rect(bx, y, bw, 62), "對戰模式", true)) { practice = false; screen = Screen.Select; }
-            if (Button(new Rect(bx, y + 76, bw, 62), "鬼道練習")) { practice = true; screen = Screen.Select; }
-            if (Button(new Rect(bx, y + 152, bw, 62), "鬼道書")) { bookReturn = Screen.Title; screen = Screen.Book; }
-            if (Button(new Rect(bx, y + 228, bw, 62), "操作說明")) screen = Screen.Howto;
-            if (Button(new Rect(bx, y + 304, bw, 62), "設定")) { screen = Screen.Settings; voice.SetSpells(Spells.Every); }
-            if (Button(new Rect(bx, y + 380, bw, 62), "離開")) Application.Quit();
+            if (Button(new Rect(bx, y, bw, 62), "主線模式", true)) OpenStory();
+            if (Button(new Rect(bx, y + 76, bw, 62), "對戰模式")) { practice = false; storyMode = false; screen = Screen.Select; }
+            if (Button(new Rect(bx, y + 152, bw, 62), "鬼道練習")) { practice = true; storyMode = false; screen = Screen.Select; }
+            if (Button(new Rect(bx, y + 228, bw, 62), "鬼道書")) { bookReturn = Screen.Title; screen = Screen.Book; }
+            if (Button(new Rect(bx, y + 304, bw, 62), "操作說明")) screen = Screen.Howto;
+            if (Button(new Rect(bx, y + 380, bw, 62), "設定")) { screen = Screen.Settings; voice.SetSpells(Spells.Every); }
+            if (Button(new Rect(bx, y + 456, bw, 62), "離開")) Application.Quit();
         }
 
         // ── 選角 ──
@@ -371,32 +394,39 @@ namespace KidoTraining
         {
             Dim(0.45f);
             Shadowed(new Rect(0, 40, W, 70), practice ? "鬼道練習 ── 選擇角色" : "對戰模式 ── 選擇角色", sH2, Color.white);
-            float cw = 560, gap = 60, x0 = W / 2 - cw - gap / 2;
+            float width = Mathf.Min(1440, W - 80);
+            float left = (W - width) / 2;
+            if (Button(new Rect(left, 110, width / 2 - 8, 46), "選擇你的角色", !selectOpponent)) selectOpponent = false;
+            if (!practice && Button(new Rect(W / 2 + 8, 110, width / 2 - 8, 46), "選擇對手", selectOpponent)) selectOpponent = true;
+            int columns = Mathf.Clamp(Mathf.FloorToInt(width / 220), 3, 6);
+            float cell = (width - 20) / columns;
+            int rows = Mathf.CeilToInt(CharacterDef.Roster.Length / (float)columns);
+            rosterScroll = GUI.BeginScrollView(new Rect(left, 172, width, 480), rosterScroll,
+                new Rect(0, 0, width - 20, rows * 122));
             for (int i = 0; i < CharacterDef.Roster.Length; i++)
             {
                 var ch = CharacterDef.Roster[i];
-                var r = new Rect(x0 + i * (cw + gap), 140, cw, 470);
-                Panel(r);
-                if (portraits.TryGetValue(ch.Id, out var ptex))
+                var r = new Rect(i % columns * cell + 4, i / columns * 122 + 4, cell - 8, 112);
+                Panel(r, 0.92f);
+                if (p1Index == i) Fill(new Rect(r.x, r.y, r.width, 4), new Color(0.85f, 0.22f, 0.2f));
+                if (!practice && p2Index == i) Fill(new Rect(r.x, r.yMax - 4, r.width, 4), new Color(0.2f, 0.6f, 1));
+                if (portraits.TryGetValue(ch.Id, out var portrait)) GUI.DrawTexture(new Rect(r.x + 4, r.y + 8, 86, 96), portrait, ScaleMode.ScaleToFit);
+                GUI.Label(new Rect(r.x + 92, r.y + 16, r.width - 96, 68), "<size=20><b>" + ch.Name + "</b></size>\n<size=15>" + ch.Title + "</size>", sText);
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none))
                 {
-                    var pr = new Rect(r.xMax - 200, r.y + 16, 180, 180);
-                    HudArt.Draw(pr, HudArt.RoundFill, ch.Id == "ichigo" ? new Color(0.55f, 0.22f, 0.08f) : new Color(0.18f, 0.2f, 0.38f));
-                    GUI.DrawTexture(pr, ptex);
-                    HudArt.Draw(pr, HudArt.RoundFrame, new Color(1, 1, 1, 0.85f));
+                    if (selectOpponent && !practice) p2Index = i; else p1Index = i;
+                    ShowPreviews(true);
                 }
-                if (p1Index == i) Fill(new Rect(r.x, r.y, r.width, 6), new Color(0.78f, 0.15f, 0.17f));
-                if (p2Index == i && !practice) Fill(new Rect(r.x, r.yMax - 6, r.width, 6), new Color(0.23f, 0.63f, 1f));
-                GUI.Label(new Rect(r.x + 24, r.y + 20, cw - 48, 60), $"<size=40><b>{ch.Name}</b></size>  <color=#aaaaaa>{ch.Title}</color>", sText);
-                GUI.Label(new Rect(r.x + 24, r.y + 90, cw - 48, 90), ch.Desc, sText);
-                Stat(r.x + 24, r.y + 190, "體力", ch.Hp / 1100f);
-                Stat(r.x + 24, r.y + 225, "近戰", ch.Melee / 1.2f);
-                Stat(r.x + 24, r.y + 260, "鬼道", ch.Kido / 1.2f);
-                Stat(r.x + 24, r.y + 295, "速度", ch.Speed / 1.1f);
-                if (Button(new Rect(r.x + 24, r.y + 350, cw / 2 - 36, 56), p1Index == i ? "✔ 你的角色" : "選為你的角色", p1Index == i)) { p1Index = i; ShowPreviews(true); }
-                if (!practice && Button(new Rect(r.x + cw / 2 + 12, r.y + 350, cw / 2 - 36, 56), p2Index == i ? "✔ 對手" : "選為對手")) { p2Index = i; ShowPreviews(true); }
             }
+            GUI.EndScrollView();
+            var selected = CharacterDef.Roster[p1Index];
+            var opponent = CharacterDef.Roster[p2Index];
+            Panel(new Rect(left, 668, width, 112), 0.9f);
+            GUI.Label(new Rect(left + 20, 678, width - 40, 42), "<color=#ee7777>你：</color><b>" + selected.Name + "</b>　" +
+                (practice ? "練習木樁" : "<color=#77bbff>對手：</color><b>" + opponent.Name + "</b>"), sText);
+            GUI.Label(new Rect(left + 20, 723, width - 40, 44), "角色外觀研究版 · 全部角色使用共用近戰與語音鬼道", sSmall);
             // 場景
-            float sy = 628;
+            float sy = 800;
             GUI.Label(new Rect(W / 2 - 400, sy + 6, 200, 50), "場景", sText);
             for (int i = 0; i < Arena.StageNames.Length; i++)
                 if (Button(new Rect(W / 2 - 220 + i * 210, sy, 190, 52), (stageIndex == i ? "✔ " : "") + Arena.StageNames[i], stageIndex == i) && stageIndex != i)
@@ -405,7 +435,7 @@ namespace KidoTraining
                     arena.Dispose();
                     arena = new Arena(world, (Stage)stageIndex);
                 }
-            float y = 700;
+            float y = 870;
             if (!practice)
             {
                 GUI.Label(new Rect(W / 2 - 400, y, 200, 50), "電腦難度", sText);
@@ -614,6 +644,7 @@ namespace KidoTraining
             HudArt.Draw(new Rect(W / 2 - 62, 8, 124, 124), HudArt.Diamond, Color.white);
             Shadowed(new Rect(W / 2 - 100, 34, 200, 70), b.Practice ? "∞" : Mathf.CeilToInt(b.TimeLeft).ToString(), sH2, b.TimeLeft < 30 && !b.Practice ? new Color(1, 0.5f, 0.4f) : Color.white);
 
+            if (b.Practice) GUI.Label(new Rect(W / 2 - 260, 135, 520, 36), "練習模式　R：立即重置對手與站位", sCenter);
             // 連擊
             if (b.ComboCount >= 2 && b.ComboT > 0)
             {
@@ -835,7 +866,7 @@ namespace KidoTraining
 
         void DrawSpellGrid(Battle b)
         {
-            var list = Spells.Every;
+            var list = b.Practice ? Spells.Every : Spells.Playable;
             int cols = 3, rows = Mathf.CeilToInt(list.Count / (float)cols);
             float cw = Mathf.Min(560, (W - 80) / cols), rh = 30;
             var r = new Rect(W / 2 - cw * cols / 2 - 10, 120, cw * cols + 20, rows * rh + 60);
@@ -876,8 +907,21 @@ namespace KidoTraining
             GUI.Label(new Rect(r.x + 40, r.y + 24, r.width - 80, r.height - 40),
                 $"施放鬼道：<b>{castCount}</b> 次\n平均相似度：<b>{avg * 100:0}%</b>\n最高威力倍率：<b>×{bestMult:0.00}</b>\n完美詠唱：<b>{perfectCount}</b> 次", sText);
             float bx = W / 2 - 190;
-            if (Button(new Rect(bx, 620, 380, 62), "再戰一場", true)) StartMatch(practice);
-            if (Button(new Rect(bx, 696, 380, 62), "回到標題")) GoTitle();
+            if (storyMode)
+            {
+                if (win && storyMission + 1 < StoryCampaign.Missions.Length)
+                {
+                    if (Button(new Rect(bx, 620, 380, 62), "下一關", true)) OpenBriefing(storyMission + 1);
+                }
+                else if (Button(new Rect(bx, 620, 380, 62), win ? "主線遭遇戰已完成" : "重試本關", true))
+                { if (win) OpenStory(); else StartStory(storyMission); }
+                if (Button(new Rect(bx, 696, 380, 62), "返回主線選關")) OpenStory();
+            }
+            else
+            {
+                if (Button(new Rect(bx, 620, 380, 62), "再戰一場", true)) StartMatch(practice);
+                if (Button(new Rect(bx, 696, 380, 62), "回到標題")) GoTitle();
+            }
         }
     }
 }

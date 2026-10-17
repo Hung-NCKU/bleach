@@ -175,8 +175,10 @@ namespace KidoTraining
         readonly string micDevice;
         int lastPos;
 
-        public VoiceCaster()
+        // Device-free construction is also used by deterministic editor checks.
+        public VoiceCaster(bool initializeDevices = true)
         {
+            if (!initializeDevices) return;
             if (Microphone.devices.Length > 0) micDevice = Microphone.devices[0];
             else Hint = "找不到麥克風：請確認麥克風已連接，並在 Windows「設定 → 隱私權與安全性 → 麥克風」允許桌面應用程式使用。";
 
@@ -193,13 +195,18 @@ namespace KidoTraining
             engine.St == VoskEngine.State.Failed ? "失敗" :
             Listening ? "聆聽中" : "待命";
 
-        public void SetSpells(IEnumerable<string> ids) => spellIds = new List<string>(ids);
+        public void SetSpells(IEnumerable<string> ids)
+        {
+            spellIds = new List<string>(ids);
+            analyzedTranscript = null;
+        }
 
         // ── 監聽控制 ──
         public void StartListening()
         {
-            if (Listening || micDevice == null) return;
+            if (Listening || micDevice == null || !Ready) return;
             micClip = Microphone.Start(micDevice, true, 10, Rate);
+            if (micClip == null) { Error = "無法啟動麥克風，請檢查裝置與權限。"; return; }
             lastPos = 0;
             Listening = true;
             listenSince = lastSound = Time.unscaledTime;
@@ -221,6 +228,7 @@ namespace KidoTraining
         {
             engine?.Reset();
             committed = ""; partial = "";
+            analyzedTranscript = null;
             pendingSince = -1;
             Chanting = false;
         }
@@ -339,26 +347,43 @@ namespace KidoTraining
             return best;
         }
 
+        string analyzedTranscript, analyzedSaid;
+        Live analyzedLive;
+        bool analyzedNameDone, analyzedWithMatched;
+        public int AnalysisRuns { get; private set; }
+
         Live Analyze(bool withMatched, out bool nameDone)
         {
-            nameDone = false;
-            string said = Similarity.Normalize(Transcript);
-            var live = new Live { Transcript = Transcript };
-            if (said.Length == 0) return live;
-            var d = DetectSpell(said);
-            live.SpellId = d.Id;
-            live.DetectScore = d.Score;
-            live.Chanting = d.Score > 0.35f;
-            if (d.Id != null)
+            string text = Transcript;
+            if (analyzedTranscript != text)
             {
-                var s = Spells.All[d.Id];
-                if (withMatched) live.Matched = Similarity.Score(said, s.FullNorm, true).Matched;
-                // 招式名已在尾端唸出？
-                int nl = s.NameNorm.Length;
-                string tail = said.Length > nl + 2 ? said.Substring(said.Length - (nl + 2)) : said;
-                nameDone = said.Length >= 2 && Similarity.Score(tail, s.NameNorm).Recall >= 0.72f;
+                AnalysisRuns++;
+                analyzedTranscript = text;
+                analyzedSaid = Similarity.Normalize(text);
+                analyzedLive = new Live { Transcript = text };
+                analyzedNameDone = analyzedWithMatched = false;
+                if (analyzedSaid.Length > 0 && spellIds.Count > 0)
+                {
+                    var d = DetectSpell(analyzedSaid);
+                    analyzedLive.SpellId = d.Id;
+                    analyzedLive.DetectScore = d.Score;
+                    analyzedLive.Chanting = d.Score > 0.35f;
+                    if (d.Id != null)
+                    {
+                        var spell = Spells.All[d.Id];
+                        int length = spell.NameNorm.Length + 2;
+                        string tail = analyzedSaid.Length > length ? analyzedSaid.Substring(analyzedSaid.Length - length) : analyzedSaid;
+                        analyzedNameDone = analyzedSaid.Length >= 2 && Similarity.Score(tail, spell.NameNorm).Recall >= 0.72f;
+                    }
+                }
             }
-            return live;
+            if (withMatched && !analyzedWithMatched && analyzedLive.SpellId != null)
+            {
+                analyzedLive.Matched = Similarity.Score(analyzedSaid, Spells.All[analyzedLive.SpellId].FullNorm, true).Matched;
+                analyzedWithMatched = true;
+            }
+            nameDone = analyzedNameDone;
+            return analyzedLive;
         }
 
         public Live GetLive(bool withMatched = true) => Analyze(withMatched, out _);
@@ -370,6 +395,7 @@ namespace KidoTraining
             if (said.Length == 0) { r.Reason = "沒有聽到詠唱"; return r; }
 
             var d = DetectSpell(said);
+            if (d.Id == null) { r.Reason = "目前沒有可施放的招式"; return r; }
             var s = Spells.All[d.Id];
             var full = Similarity.Score(said, s.FullNorm);
             var name = Similarity.Score(said, s.NameNorm);

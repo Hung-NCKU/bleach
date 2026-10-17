@@ -92,13 +92,17 @@ namespace KidoTraining
         public static Texture2D Build(CharacterDef ch)
         {
             var cv = new Canvas();
-            bool ichigo = ch.Id == "ichigo";
+            bool ichigo = !ch.Female;
             var st = ichigo
                 ? new EyeStyle { Rx = 0.062f, Ry = 0.036f, IrisRx = 0.03f, IrisRy = 0.044f, Tilt = 0.12f, LashW = 0.0075f,
                     Iris = Spells.Hex(0x8a4a22), IrisDark = Spells.Hex(0x3a1a0a), Lash = Spells.Hex(0x2a160c), Brow = Spells.Hex(0xd8661a), Scowl = true }
                 : new EyeStyle { Rx = 0.064f, Ry = 0.058f, IrisRx = 0.04f, IrisRy = 0.056f, Tilt = 0.05f, LashW = 0.0085f,
                     Iris = Spells.Hex(0x7a5ac8), IrisDark = Spells.Hex(0x2a1a5a), Lash = Spells.Hex(0x101014), Brow = Spells.Hex(0x16161c) };
 
+            st.Iris = ch.Eye;
+            st.IrisDark = Color.Lerp(ch.Eye, Color.black, 0.65f);
+            st.Brow = Color.Lerp(ch.Hair, Color.black, 0.22f);
+            if (ch.Id == "gin" || ch.Id == "unohana") { st.Ry = 0.008f; st.IrisRy = 0.007f; st.Scowl = false; }
             foreach (int s in new[] { -1, 1 })
             {
                 float cx = 0.5f + s * 0.155f, cy = 0.5f;
@@ -167,6 +171,23 @@ namespace KidoTraining
                 foreach (int s in new[] { -1, 1 })
                     cv.Ellipse(0.5f + s * 0.17f, 0.39f, 0.05f, 0.022f, new Color(1f, 0.55f, 0.55f, 0.28f));
             }
+
+            if (ch.Id == "ulquiorra")
+                foreach (int side in new[] { -1, 1 })
+                    cv.Line(new Vector2(0.5f + side * 0.155f, 0.455f), new Vector2(0.5f + side * 0.19f, 0.19f), 0.011f, 0.006f, Spells.Hex(0x225542));
+            if (ch.Id == "nel")
+                cv.Line(new Vector2(0.33f, 0.38f), new Vector2(0.67f, 0.38f), 0.018f, 0.018f, Spells.Hex(0x9b4969));
+            if (ch.Id == "renji")
+                foreach (int side in new[] { -1, 1 })
+                    for (int i = 0; i < 3; i++)
+                        cv.Line(new Vector2(0.5f + side * (0.06f + i * 0.055f), 0.63f), new Vector2(0.5f + side * (0.08f + i * 0.055f), 0.69f), 0.006f, 0.012f, Spells.Hex(0x25232b));
+            if (ch.Id == "mayuri")
+                foreach (int side in new[] { -1, 1 })
+                {
+                    cv.Ellipse(0.5f + side * 0.155f, 0.5f, 0.1f, 0.13f, Spells.Hex(0x171c2a));
+                    cv.Ellipse(0.5f + side * 0.155f, 0.5f, 0.045f, 0.038f, Spells.Hex(0xd7ad49));
+                    cv.Ellipse(0.5f + side * 0.155f, 0.5f, 0.015f, 0.028f, Color.black);
+                }
 
             var tex = new Texture2D(N, N, TextureFormat.RGBA32, true) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Trilinear, anisoLevel = 4 };
             // 透明處沿用膚色，避免 mipmap 在邊緣出現黑邊

@@ -7,6 +7,11 @@ namespace KidoTraining
     public static class MeshGen
     {
         static readonly Dictionary<string, Mesh> cache = new Dictionary<string, Mesh>();
+        public static bool IsShared(Mesh mesh)
+        {
+            foreach (var item in cache.Values) if (item == mesh) return true;
+            return false;
+        }
 
         public static Mesh Builtin(PrimitiveType t)
         {

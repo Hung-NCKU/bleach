@@ -44,6 +44,7 @@ namespace KidoTraining
         public static readonly List<string> Book = new List<string>();      // 電腦對手可用的一般鬼道
         public static readonly List<string> Ultimates = new List<string>(); // 奧義（靈壓全滿）
         public static readonly List<string> Every = new List<string>();     // 玩家可詠唱的全部招式
+        public static readonly List<string> Playable = new List<string>();  // 正式對戰不包含免費測試招式
 
         const string ChantKimmin = "君臨者啊！血肉的面具，萬象‧振翅高飛‧冠以人類之名者啊！";
         const string ChantRondanini = "自我毀滅吧，隆塔尼尼的黑犬！值得一提，徹底燒盡·把自己的喉嚨割斷吧！";
@@ -60,6 +61,7 @@ namespace KidoTraining
             s.NameNorm = Similarity.Normalize(s.Name);
             All[id] = s;
             Every.Add(id);
+            if (!test) Playable.Add(id);
             if (kind == SpellKind.Ultimate) Ultimates.Add(id);
             else if (!test) Book.Add(id);
         }
@@ -158,6 +160,9 @@ namespace KidoTraining
         public float Hp, Melee, Kido, KidoCost, Speed;
         public bool BigSword;
         public float Scale;
+        public bool Female;
+        public float Build = 1f;
+        public CharacterDef Copy() => (CharacterDef)MemberwiseClone();
         public Color Hair, Skin, Robe, Inner, Blade, Eye, Aura;
 
         public static readonly CharacterDef Ichigo = new CharacterDef {
@@ -176,6 +181,6 @@ namespace KidoTraining
             Blade = Color.white, Eye = Spells.Hex(0x6a4ab0), Aura = Spells.Hex(0xe8f8ff),
         };
 
-        public static readonly CharacterDef[] Roster = { Ichigo, Rukia };
+        public static readonly CharacterDef[] Roster = RosterCatalog.Build();
     }
 }
