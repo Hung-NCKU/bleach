@@ -29,3 +29,5 @@ The Models Resource 的[使用條款](https://models.spriters-resource.com/page/
 未來真正匯入的每個檔案應記錄：名稱、作者／權利人、來源 URL、授權或許可依據、修改內容、檔案校驗碼，以及可否公開散布。目前沒有以「非營利」替任何候選素材補上一份不存在的授權。
 
 調查日期：2026-10-18。
+
+公開／開源候選與採用順序見 [open-resources.md](docs/asset-sources/open-resources.md)，涵蓋動畫、材質、卡通渲染與 BLEACH 資料庫；候選未視為已匯入素材。
