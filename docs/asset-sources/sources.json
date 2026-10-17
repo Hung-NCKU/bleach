@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "reviewedOn": "2026-10-18",
+  "purpose": "Noncommercial research and learning; not a third-party asset license",
+  "shareReference": "https://chatgpt.com/s/t_6ad3c36621b481918c6d97c4ee4b3f01",
+  "importedThirdPartyAssetCount": 0,
+  "sources": [
+    {
+      "id": "bbs-model-directory",
+      "kind": "model-directory",
+      "url": "https://models.spriters-resource.com/pc_computer/bleachbravesouls/",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/",
+      "status": "reference-only",
+      "assetsIncluded": false
+    },
+    {
+      "id": "bbs-ichigo-boxy",
+      "kind": "model",
+      "title": "Ichigo",
+      "submitter": "Boxy",
+      "url": "https://models.spriters-resource.com/pc_computer/bleachbravesouls/asset/356572/",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/",
+      "advertisedFormats": ["fbx", "dae", "png"],
+      "status": "not-downloaded-security-verification",
+      "redistributionPermissionConfirmed": false,
+      "assetsIncluded": false,
+      "sha256": null
+    },
+    {
+      "id": "rukia-fan-model-lappy",
+      "kind": "model",
+      "title": "Rukia Kuchiki full body",
+      "author": "Lappy / Hopeful_sage17",
+      "url": "https://sketchfab.com/3d-models/rukia-kuchiki-full-body-2e3b80322bb04a8ea43626ddbcf3664f",
+      "declaredLicense": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "rigged": false,
+      "costume": "casual house clothing",
+      "status": "not-downloaded-login-required",
+      "rightsScope": "Uploader's declared license; underlying character rights not independently cleared",
+      "assetsIncluded": false,
+      "sha256": null
+    },
+    {
+      "id": "bbs-voice-directory",
+      "kind": "voice-directory",
+      "url": "https://sounds.spriters-resource.com/mobile/bleachbravesouls/",
+      "status": "reference-only-no-redistribution-permission-established",
+      "assetsIncluded": false
+    },
+    {
+      "id": "klab-official-music",
+      "kind": "bgm-reference",
+      "url": "https://www.bleach-bravesouls.com/movie/",
+      "status": "official-listening-reference-not-an-asset-license",
+      "assetsIncluded": false
+    },
+    {
+      "id": "aniplex-official-ost",
+      "kind": "ost-reference",
+      "url": "https://www.aniplex.co.jp/lineup/bleach-anime/products/",
+      "status": "official-product-reference-not-an-asset-license",
+      "assetsIncluded": false
+    },
+    {
+      "id": "dark-souls-sprite-database",
+      "kind": "legacy-game-reference",
+      "url": "https://spritedatabase.net/game/3",
+      "status": "reference-only",
+      "assetsIncluded": false
+    }
+  ]
+}
