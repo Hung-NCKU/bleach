@@ -73,6 +73,13 @@ namespace KidoTraining
                 d.z *= 1 - 0.1f * t;
                 d.y *= 1.14f;
             }
+            // A brow plane, nose bridge and cheek taper replace the spherical face.
+            if (d.z > 0)
+            {
+                float nose = Mathf.Exp(-d.x * d.x * 130 - (d.y + 0.14f) * (d.y + 0.14f) * 35);
+                d.z += 0.14f * nose;
+                d.z -= 0.045f * Mathf.Exp(-d.y * d.y * 35) * Mathf.Abs(d.x);
+            }
             return d * len;
         }
 
@@ -97,7 +104,7 @@ namespace KidoTraining
             J[(int)Jt.Hips] = Joint(body, "hips", 0, 0.98f, 0);
             var hips = this[Jt.Hips];
             Part(hips, MeshGen.Lathe(new[] { 0.07f, 0f }, new[] { 0.172f, 0.176f }, 24, 0.82f), white, Vector3.zero);
-            Part(hips, MeshGen.Lathe(new[] { 0.02f, -0.12f, -0.26f, -0.36f }, new[] { 0.175f, 0.205f, 0.24f, 0.255f }, 24, 0.8f), robe, Vector3.zero);
+            Part(hips, ArtMeshes.Cloth(new[] { 0.02f, -0.08f, -0.18f, -0.27f }, new[] { 0.175f, 0.19f, 0.215f, 0.23f }, 0.8f, 10, 0.012f), robe, Vector3.zero);
 
             // ── 軀幹：死霸裝＋交疊的白色衣領 ──
             J[(int)Jt.Torso] = Joint(hips, "torso", 0, 0.06f, 0);
@@ -105,7 +112,7 @@ namespace KidoTraining
             float[] ty = { 0.54f, 0.5f, 0.46f, 0.4f, 0.3f, 0.16f, 0.04f, -0.05f };
             float[] tr = { 0.06f, 0.12f, 0.19f, 0.21f, 0.205f, 0.185f, 0.172f, 0.17f };
             const float depth = 0.78f;
-            Part(torso, MeshGen.Lathe(ty, tr, 28, depth), robe, Vector3.zero);
+            Part(torso, ArtMeshes.Cloth(ty, tr, depth, 9, 0.006f, true, true), robe, Vector3.zero);
             Part(torso, MeshGen.Lathe(new[] { 0.55f, 0.49f }, new[] { 0.078f, 0.108f }, 20, 0.9f), robe, Vector3.zero);
             float R(float y)
             {
@@ -186,17 +193,17 @@ namespace KidoTraining
                 for (int ph = -150; ph <= 180; ph += 30)
                 {
                     var rd = Sph(30, ph);
-                    Spike(hc + rd * HR * 0.9f, (rd * 0.9f + Vector3.up * 0.55f + back * 0.35f).normalized, 0.2f, 0.065f, 0.55f, new Vector3(0, -0.2f, -0.3f), rd);
+                    Spike(hc + rd * HR * 0.9f, (rd * 0.9f + Vector3.up * 0.55f + back * 0.35f).normalized, 0.135f, 0.045f, 0.38f, new Vector3(0, -0.2f, -0.3f), rd);
                 }
                 for (int ph = 40; ph <= 320; ph += 28)
                 {
                     var rd = Sph(62, ph);
-                    Spike(hc + rd * HR * 0.92f, (rd + new Vector3(0, 0.25f, -0.25f)).normalized, 0.18f, 0.06f, 0.55f, new Vector3(0, -0.4f, 0), rd);
+                    Spike(hc + rd * HR * 0.92f, (rd + new Vector3(0, 0.25f, -0.25f)).normalized, 0.12f, 0.042f, 0.38f, new Vector3(0, -0.4f, 0), rd);
                 }
                 for (int ph = 130; ph <= 230; ph += 25)
                 {
                     var rd = Sph(100, ph);
-                    Spike(hc + rd * HR * 0.92f, (rd + new Vector3(0, -0.55f, -0.2f)).normalized, 0.15f, 0.055f, 0.55f, Vector3.down, rd);
+                    Spike(hc + rd * HR * 0.92f, (rd + new Vector3(0, -0.55f, -0.2f)).normalized, 0.10f, 0.038f, 0.4f, Vector3.down, rd);
                 }
                 foreach (int ph in new[] { -100, -75, 75, 100 })
                 {
@@ -209,7 +216,7 @@ namespace KidoTraining
                 {
                     var rd = Sph(42, ph);
                     var d = (new Vector3(0, 0, 1) * 0.55f + Vector3.down * 0.75f + new Vector3(Mathf.Sin(ph * Mathf.Deg2Rad) * 0.6f, 0, 0)).normalized;
-                    Spike(hc + rd * HR, d, 0.11f + (bi++ % 2) * 0.025f, 0.045f, 0.5f, Vector3.zero, rd);
+                    Spike(hc + rd * HR, d, 0.085f + (bi++ % 2) * 0.02f, 0.034f, 0.35f, Vector3.zero, rd);
                 }
                 Spike(hc + Sph(14, 0) * HR, new Vector3(0, 0.55f, 0.83f), 0.15f, 0.06f, 0.55f, new Vector3(0, -0.3f, 0), Vector3.up);
             }
@@ -248,10 +255,10 @@ namespace KidoTraining
             foreach (int s in new[] { -1, 1 })
             {
                 var arm = Joint(torso, s < 0 ? "armL" : "armR", 0.215f * s, 0.44f, 0);
-                Part(arm, MeshGen.Lathe(new[] { 0.04f, -0.1f, -0.28f }, new[] { 0.08f, 0.105f, 0.125f }, 16), robe, Vector3.zero);
+                Part(arm, ArtMeshes.Cloth(new[] { 0.04f, -0.06f, -0.17f, -0.28f }, new[] { 0.08f, 0.092f, 0.103f, 0.11f }, 0.85f, 6, 0.006f), robe, Vector3.zero);
                 var fore = Joint(arm, "fore", 0, -0.27f, 0);
-                Part(fore, MeshGen.Lathe(new[] { 0.04f, -0.08f, -0.22f }, new[] { 0.115f, 0.15f, 0.175f }, 18), robe, Vector3.zero);
-                Part(fore, MeshGen.Torus(0.17f, 0.014f, 6, 24), white, new Vector3(0, -0.215f, 0), Vector3.one, Quaternion.Euler(90, 0, 0));
+                Part(fore, ArtMeshes.Cloth(new[] { 0.04f, -0.04f, -0.14f, -0.22f }, new[] { 0.105f, 0.12f, 0.13f, 0.125f }, 0.8f, 6, 0.009f), robe, Vector3.zero);
+                Part(fore, MeshGen.Torus(0.12f, 0.004f, 6, 48), white, new Vector3(0, -0.215f, 0), new Vector3(1, 0.8f, 1), Quaternion.Euler(90, 0, 0));
                 Part(fore, MeshGen.Lathe(new[] { -0.12f, -0.25f }, new[] { 0.036f, 0.031f }, 10), skin, Vector3.zero);
                 var hand = Joint(fore, "hand", 0, -0.26f, 0);
                 Part(hand, MeshGen.Sphere(), skin, new Vector3(0, -0.035f, 0), new Vector3(0.075f, 0.095f, 0.05f), Quaternion.identity);
@@ -265,9 +272,9 @@ namespace KidoTraining
             foreach (int s in new[] { -1, 1 })
             {
                 var leg = Joint(hips, s < 0 ? "legL" : "legR", 0.1f * s, -0.1f, 0);
-                Part(leg, MeshGen.Lathe(new[] { 0.02f, -0.45f }, new[] { 0.14f, 0.175f }, 18, 0.9f), robe, Vector3.zero);
+                Part(leg, ArtMeshes.Cloth(new[] { 0.02f, -0.1f, -0.26f, -0.45f }, new[] { 0.13f, 0.155f, 0.166f, 0.17f }, 0.9f, 7, 0.016f), robe, Vector3.zero);
                 var shin = Joint(leg, "shin", 0, -0.44f, 0);
-                Part(shin, MeshGen.Lathe(new[] { 0.03f, -0.3f, -0.33f }, new[] { 0.175f, 0.2f, 0.2f }, 18, 0.9f), robe, Vector3.zero);
+                Part(shin, ArtMeshes.Cloth(new[] { 0.03f, -0.09f, -0.22f, -0.33f }, new[] { 0.17f, 0.18f, 0.185f, 0.175f }, 0.9f, 7, 0.019f), robe, Vector3.zero);
                 Part(shin, MeshGen.Lathe(new[] { -0.26f, -0.38f }, new[] { 0.045f, 0.05f }, 10), white, Vector3.zero);
                 Part(shin, MeshGen.Sphere(), white, new Vector3(0, -0.385f, 0.05f), new Vector3(0.1f, 0.065f, 0.22f), Quaternion.identity);
                 Part(shin, MeshGen.Cube(), sandal, new Vector3(0, -0.42f, 0.05f), new Vector3(0.105f, 0.025f, 0.25f), Quaternion.identity);
@@ -289,7 +296,12 @@ namespace KidoTraining
                     Part(sword, MeshGen.Torus(0.031f, 0.005f, 4, 12), dark, new Vector3(0, 0, -0.02f + i * 0.06f), Vector3.one, Quaternion.Euler(0, 0, 45));
                 var blade = MeshGen.Blade(new[] { new Vector2(-0.11f, 0.28f), new Vector2(-0.11f, 1.62f), new Vector2(0.18f, 1.9f) },
                                           new[] { new Vector2(0.19f, 0.28f), new Vector2(0.19f, 1.6f), new Vector2(0.19f, 1.9f) }, 0.035f);
-                Part(sword, blade, steel, Vector3.zero, Vector3.one, toZ);
+                var spineMat = Mats.Toon(Spells.Hex(0x242a35), 0.004f, 0.35f);
+                Part(sword, blade, spineMat, Vector3.zero, Vector3.one, toZ);
+                var cuttingEdge = MeshGen.Blade(
+                    new[] { new Vector2(0.13f, 0.28f), new Vector2(0.13f, 1.6f), new Vector2(0.18f, 1.9f) },
+                    new[] { new Vector2(0.19f, 0.28f), new Vector2(0.19f, 1.6f), new Vector2(0.19f, 1.9f) }, 0.037f);
+                Part(sword, cuttingEdge, steel, Vector3.zero, Vector3.one, toZ);
                 var c = new List<Vector3>(); var side = new List<Vector3>(); var w = new List<float>(); var n = new List<Vector3>();
                 for (int i = 0; i <= 12; i++)
                 {
@@ -320,6 +332,12 @@ namespace KidoTraining
                     new Vector3(-0.2f, 0.03f, 0.1f) + d * 0.42f, Vector3.one, Quaternion.FromToRotation(Vector3.up, d));
                 Part(saya, MeshGen.Torus(0.028f, 0.006f, 4, 12), Mats.Toon(Spells.Hex(0x8a7440), 0), new Vector3(0, -0.4f, 0), Vector3.one, Quaternion.Euler(90, 0, 0));
             }
+
+            Part(hips, MeshGen.Sphere(), white, new Vector3(0.03f, 0.035f, 0.155f),
+                new Vector3(0.075f, 0.05f, 0.045f), Quaternion.identity);
+            foreach (int side in new[] { -1, 1 })
+                Part(hips, MeshGen.Cube(), white, new Vector3(0.045f * side, -0.085f, 0.17f),
+                    new Vector3(0.035f, 0.2f, 0.012f), Quaternion.Euler(0, 0, side * 17));
 
             Scale = ch.Scale;
             Root.localScale = Vector3.one * Scale;

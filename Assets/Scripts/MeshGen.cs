@@ -14,7 +14,8 @@ namespace KidoTraining
             if (cache.TryGetValue(key, out var m)) return m;
             var go = GameObject.CreatePrimitive(t);
             m = go.GetComponent<MeshFilter>().sharedMesh;
-            Object.Destroy(go);
+            if (Application.isPlaying) Object.Destroy(go);
+            else Object.DestroyImmediate(go);
             cache[key] = m;
             return m;
         }

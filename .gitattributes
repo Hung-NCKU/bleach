@@ -1,4 +1,4 @@
-﻿# Vosk 模型與原生插件：保持原樣，不做換行轉換
+# Vosk 模型與原生插件：保持原樣，不做換行轉換
 Assets/StreamingAssets/** binary
 Assets/Plugins/** binary
 *.dll binary

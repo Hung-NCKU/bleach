@@ -147,7 +147,7 @@ namespace KidoTraining
         {
             Sky(Spells.Hex(0x2f6fd0), Spells.Hex(0xb8dcff), Spells.Hex(0xf0e4cc),
                 Spells.Hex(0xdfeaff), Spells.Hex(0xc8c0b0), Spells.Hex(0x8a7a60), Spells.Hex(0xcfdcec), 70, 230);
-            Sun(Spells.Hex(0xfff2dc), 1.3f, new Vector3(-0.45f, -0.8f, -0.35f), 0.75f);
+            Sun(Spells.Hex(0xfff2dc), 1.05f, new Vector3(-0.45f, -0.8f, -0.35f), 0.75f);
 
             // 地面：砂土、石板廣場、訓練陣
             var dirt = Tex(256, 256, (x, y, r) => { float v = 0.88f + (float)r.NextDouble() * 0.12f; return new Color(0.74f * v, 0.64f * v, 0.5f * v); });
@@ -158,9 +158,9 @@ namespace KidoTraining
                 int bx = x / s, by = y / s;
                 int ox = (by % 2) * (s / 2);
                 int lx = (x + ox) % s, ly = y % s;
-                if (lx < 3 || ly < 3) return new Color(0.46f, 0.43f, 0.4f);
+                if (lx < 2 || ly < 2) return new Color(0.49f, 0.49f, 0.51f);
                 var cell = new System.Random(((x + ox) / s) * 131 + by * 17);
-                float v = 0.78f + (float)cell.NextDouble() * 0.1f + (float)r.NextDouble() * 0.04f;
+                float v = 0.69f + (float)cell.NextDouble() * 0.06f + (float)r.NextDouble() * 0.015f;
                 if (lx < 6 || ly < 6) v *= 0.93f;
                 return new Color(v, v * 0.975f, v * 0.94f);
             });
@@ -188,6 +188,25 @@ namespace KidoTraining
                     Box(g, roofM, new Vector3(0, 3.28f, 0.27f * s), new Vector3(len + 0.1f, 0.08f, 0.72f), Quaternion.Euler(28 * s, 0, 0));
                 Box(g, wood, new Vector3(0, 3.46f, 0), new Vector3(len + 0.1f, 0.16f, 0.16f));
             }
+
+            // Layered facades form a street beyond the playable courtyard.
+            var streetRoof = Textured(tileTex, new Vector2(26, 5));
+            foreach (int side in new[] { -1, 1 })
+                for (int row = 0; row < 7; row++)
+                {
+                    var house = Group("StreetFacade", new Vector3(side * 17, 0, 40 + row * 11));
+                    Box(house, plaster, new Vector3(0, 4, 0), new Vector3(12, 8, 9));
+                    Box(house, wood, new Vector3(0, 0.4f, 0), new Vector3(12.2f, 0.8f, 9.2f));
+                    for (int floor = 0; floor < 2; floor++)
+                    {
+                        float y = 3.4f + floor * 4;
+                        for (int post = -2; post <= 2; post++)
+                            Box(house, wood, new Vector3(post * 2.6f, y - 1.2f, -4.56f), new Vector3(0.14f, 2.4f, 0.16f));
+                        Put(house, ArtMeshes.Roof(13.5f, 11, 1.7f), streetRoof,
+                            new Vector3(0, y, 0), Vector3.one, Quaternion.identity);
+                        Box(house, wood, new Vector3(0, y + 1.7f, 0), new Vector3(13.6f, 0.16f, 0.2f));
+                    }
+                }
 
             // 石燈籠
             var stoneM = Mats.Toon(Spells.Hex(0xa8a298), 0.015f, 0, new Color(0.75f, 0.75f, 0.85f));
@@ -230,9 +249,11 @@ namespace KidoTraining
                 for (int k = 0; k < tiers; k++)
                 {
                     float sw = w * (1.25f - k * 0.35f), sd = dd * (1.25f - k * 0.35f);
-                    var rs = Group("roof", new Vector3(0, y + 1.1f, 0), 0, b);
-                    rs.localScale = new Vector3(sw, 1, sd);
-                    Put(rs, MeshGen.Frustum(0.12f, 0.72f, 2.2f, 4), roofDark, Vector3.zero, Vector3.one, Quaternion.Euler(0, 45, 0));
+                    var rs = Group("roof", new Vector3(0, y, 0), 0, b);
+                    Put(rs, ArtMeshes.Roof(sw, sd, 2.2f), roofDark, Vector3.zero, Vector3.one, Quaternion.identity);
+                    Box(rs, wood, new Vector3(0, 2.2f, 0), new Vector3(sw + 0.2f, 0.18f, 0.22f));
+                    foreach (int side in new[] { -1, 1 })
+                        Box(rs, wood, new Vector3(0, 0.12f, side * sd / 2), new Vector3(sw, 0.18f, 0.16f));
                     if (k + 1 < tiers)
                     {
                         Box(b, plaster, new Vector3(0, y + 2.4f, 0), new Vector3(sw * 0.45f, 2.2f, sd * 0.45f));
@@ -276,6 +297,18 @@ namespace KidoTraining
             foreach (int s in new[] { -1, 1 })
                 Box(g, roof, new Vector3(0, 4.25f, 0.4f * s), new Vector3(6.2f, 0.1f, 1.0f), Quaternion.Euler(24 * s, 0, 0));
             Box(g, wood, new Vector3(0, 4.48f, 0), new Vector3(6.2f, 0.18f, 0.18f));
+            var iron = Mats.Toon(Spells.Hex(0x252d39), 0.008f, 0.2f);
+            foreach (int side in new[] { -1, 1 })
+            {
+                var door = Group("OpenGateLeaf", new Vector3(side * 2.1f, 0, 0.1f), side * 65, g);
+                Box(door, wood, new Vector3(-side * 0.9f, 1.55f, 0), new Vector3(1.8f, 3.1f, 0.16f));
+                for (int plank = 0; plank < 7; plank++)
+                    Box(door, red, new Vector3(-side * (0.12f + plank * 0.25f), 1.55f, 0.1f), new Vector3(0.018f, 3, 0.018f));
+                foreach (float h in new[] { 0.5f, 2.5f })
+                    Box(door, iron, new Vector3(-side * 0.9f, h, 0.12f), new Vector3(1.8f, 0.12f, 0.06f));
+                Put(door, MeshGen.Torus(0.11f, 0.018f, 8, 24), iron,
+                    new Vector3(-side * 1.55f, 1.5f, 0.15f), Vector3.one, Quaternion.identity);
+            }
         }
 
         void Sakura(Vector3 pos)
@@ -370,6 +403,16 @@ namespace KidoTraining
                 var tp = new Vector3(Mathf.Cos(a) * 55, 0, Mathf.Sin(a) * 55);
                 float th = Rand(60, 95);
                 Put(lasNoches, MeshGen.Frustum(2.5f, 3.2f, th, 12), white, tp + Vector3.up * th / 2, Vector3.one, Quaternion.identity);
+            }
+
+            // Palace perimeter, recessed gate and repeating buttresses.
+            var recess = Mats.Toon(Spells.Hex(0x151c32), 0);
+            Box(lasNoches, white, new Vector3(0, 8, 47), new Vector3(110, 16, 5));
+            Box(lasNoches, recess, new Vector3(0, 6, 49.6f), new Vector3(9, 12, 0.15f));
+            for (int i = -5; i <= 5; i++)
+            {
+                Box(lasNoches, white, new Vector3(i * 10, 11, 51), new Vector3(1.5f, 22, 3));
+                Box(lasNoches, recess, new Vector3(i * 10 + 4, 11, 49.6f), new Vector3(0.5f, 5, 0.15f));
             }
 
             // 新月與星空

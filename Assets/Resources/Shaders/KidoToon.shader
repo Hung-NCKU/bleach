@@ -99,7 +99,7 @@ Shader "Kido/Toon"
                 float3 albedo = _Color.rgb * tex2D(_MainTex, i.uv).rgb;
                 float3 amb = ShadeSH9(float4(n, 1));
                 float3 shade = albedo * _ShadeColor.rgb * (0.55 + amb * 0.6);
-                float3 bright = albedo * (_LightColor0.rgb * 0.85 + amb * 0.35);
+                float3 bright = albedo * (_LightColor0.rgb * 0.62 + amb * 0.22);
                 float3 c = lerp(shade, bright, lit);
                 // 髮絲高光：沿頭髮的環狀光帶
                 float3 h = normalize(l + v);
@@ -107,7 +107,7 @@ Shader "Kido/Toon"
                 c += band * _Spec * _LightColor0.rgb * 0.45 * lit;
                 // 邊緣光
                 float rim = smoothstep(0.55, 0.75, 1 - saturate(dot(n, v))) * saturate(ndl + 0.4);
-                c += rim * _Rim * _LightColor0.rgb * albedo;
+                c += rim * _Rim * _LightColor0.rgb * albedo * 0.35;
                 c += _Emission.rgb;
                 fixed4 col = fixed4(c, 1);
                 UNITY_APPLY_FOG(i.fogCoord, col);
@@ -115,6 +115,8 @@ Shader "Kido/Toon"
             }
             ENDCG
         }
+
+        UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
 
         // 點光源（鬼道發光照到角色）
         Pass

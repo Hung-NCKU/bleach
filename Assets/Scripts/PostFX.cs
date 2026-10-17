@@ -6,8 +6,8 @@ namespace KidoTraining
     [RequireComponent(typeof(Camera))]
     public class PostFX : MonoBehaviour
     {
-        public float Threshold = 0.82f, Knee = 0.35f, Intensity = 0.9f;
-        public float Exposure = 1.25f, Contrast = 1.08f, Saturation = 1.12f, Vignette = 0.9f;
+        public float Threshold = 0.82f, Knee = 0.35f, Intensity = 0.22f;
+        public float Exposure = 1f, Contrast = 1.04f, Saturation = 1.04f, Vignette = 0.35f;
         public Color Tint = new Color(1.04f, 1.0f, 0.95f), Shadow = new Color(0.9f, 0.95f, 1.08f);
 
         Material mat;
