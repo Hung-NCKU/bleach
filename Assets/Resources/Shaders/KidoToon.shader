@@ -143,11 +143,15 @@ Shader "Kido/Toon"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
             fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            float _Cutoff;
             struct v2f
             {
                 float4 pos : SV_POSITION;
                 float3 wn : TEXCOORD0;
                 float3 wp : TEXCOORD1;
+                float2 uv : TEXCOORD4;
                 LIGHTING_COORDS(2, 3)
             };
             v2f vert (appdata_base v)
@@ -156,6 +160,7 @@ Shader "Kido/Toon"
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.wn = UnityObjectToWorldNormal(v.normal);
                 o.wp = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
                 TRANSFER_VERTEX_TO_FRAGMENT(o);
                 return o;
             }
@@ -165,7 +170,9 @@ Shader "Kido/Toon"
                 float ndl = saturate(dot(normalize(i.wn), ld));
                 float att = LIGHT_ATTENUATION(i);
                 float s = step(0.05, ndl * att) * 0.6 + ndl * att * 0.4;
-                return fixed4(_Color.rgb * _LightColor0.rgb * s, 1);
+                fixed4 texel = tex2D(_MainTex, i.uv);
+                clip(texel.a - _Cutoff);
+                return fixed4(texel.rgb * _Color.rgb * _LightColor0.rgb * s, 0);
             }
             ENDCG
         }

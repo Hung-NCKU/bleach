@@ -29,7 +29,7 @@ namespace KidoTraining
                 .Set(Jt.ArmL, 0, 0, -0.13f), 1);
             foreach (var t in holder.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Layer;
 
-            var headPos = model[Jt.Head].position + Vector3.up * 0.15f * model.Scale;
+            var headPos = model[Jt.Head].position + Vector3.up * 0.02f * model.Scale;
             var dir = Quaternion.Euler(0, 24, 0) * Vector3.forward;
 
             var camGo = new GameObject("PortraitCam");
@@ -38,9 +38,9 @@ namespace KidoTraining
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0, 0, 0, 0);
             cam.cullingMask = 1 << Layer;
-            cam.fieldOfView = 24;
+            cam.fieldOfView = 30;
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 10;
-            cam.transform.position = headPos + dir * 1.15f * model.Scale + Vector3.up * 0.03f;
+            cam.transform.position = headPos + dir * 1.55f * model.Scale + Vector3.up * 0.03f;
             cam.transform.LookAt(headPos - Vector3.up * 0.04f * model.Scale);
             cam.targetTexture = rt;
 

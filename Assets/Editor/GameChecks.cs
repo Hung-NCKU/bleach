@@ -95,6 +95,21 @@ public static class GameChecks
             disposable.Dispose();
             Require(ownFace == null && commonCube != null && battle.P1.Model.Root != null,
                 "Model disposal leaked generated geometry or destroyed shared resources");
+            var player = battle.P1; var enemy = battle.P2;
+            player.Reset(); enemy.Reset(); player.Pos = Vector3.zero; enemy.Pos = Vector3.forward * 12;
+            player.Update(1f / 60, new Intent { Move = Vector3.right });
+            Require(Vector3.Dot(player.Forward, player.DirTo(enemy)) > 0.95f && player.Vel.x > 0, "Strafing lost target facing");
+            player.Update(1f / 60, new Intent { Move = Vector3.left, GuardHeld = true, Jump = true });
+            Require(player.State == FState.Evade && player.Vel.x < 0 && player.Invuln > 0, "Directional evade did not start");
+            for (int i = 0; i < 20; i++) player.Update(1f / 60, new Intent());
+            Require(player.State != FState.Evade && player.Invuln <= 0, "Evade failed to end");
+            player.Reset(); player.Pos = Vector3.zero; player.Rei = 100;
+            player.Update(1f / 60, new Intent { ChargeHeld = true, Jump = true });
+            Require(player.State == FState.Dash && player.Rei == 88, "Held charge + jump failed to dash");
+            player.Update(1f / 60, new Intent { Attack = true });
+            for (int i = 0; i < 60 && player.State == FState.Dash; i++) player.Update(1f / 60, new Intent());
+            Require(player.State == FState.Attack, "Dash buffered attack did not connect");
+            player.Reset(); enemy.Reset();
             float startTime = battle.TimeLeft;
             for (int i = 0; i < 10; i++) battle.Update(0.01f, new Intent(), 0.1f);
             Require(Mathf.Abs(battle.TimeLeft - (startTime - 1)) < 0.002f, "Battle clock follows capped physics instead of elapsed time");
@@ -117,6 +132,7 @@ public static class GameChecks
         }
         Directory.CreateDirectory("docs/art-remake/previews");
         File.WriteAllText("docs/art-remake/previews/game-checks.txt",
+            "PASS: target-facing strafe, finite directional evade, held-charge dash and buffered attack\n" +
             "PASS: " + missions.Length + " missions, unique IDs, referenced characters and progressive scaling\n" +
             "PASS: sequential unlocking, duplicate completion and JSON save roundtrip\n" +
             "PASS: voice analysis reused for 120 unchanged frames and invalidated on spell-list change/cancel\n" +

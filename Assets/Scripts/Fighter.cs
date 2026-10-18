@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace KidoTraining
 {
-    public enum FState { Idle, Run, Air, Guard, Charge, Dash, Attack, AirAttack, Cast, Chant, Hit, Launched, Down, Bound, Warp, Dead }
+    public enum FState { Idle, Run, Air, Evade, Guard, Charge, Dash, Attack, AirAttack, Cast, Chant, Hit, Launched, Down, Bound, Warp, Dead }
 
     // 控制意圖（玩家輸入與 AI 共用）
     public class Intent
@@ -69,6 +69,9 @@ namespace KidoTraining
         public float StealthT, ShunkoT, NetT, DoubleT; // 曲光／瞬閧／吊星／雙重詠唱
         int jumps, combo;
         bool queued, hitDone;
+        Vector3 evadeDirection;
+        float evadeCooldown;
+        bool dashAttack;
 
         public Fighter(Battle b, CharacterDef ch, bool isPlayer)
         {
@@ -84,6 +87,7 @@ namespace KidoTraining
             State = FState.Idle; StateT = 0; OnGround = true; jumps = 2; combo = 0;
             Invuln = BindT = PrimeT = MarkT = 0;
             MarkedBy = null; Chanting = false; Vel = Vector3.zero;
+            evadeCooldown = 0; dashAttack = false;
             StealthT = ShunkoT = NetT = DoubleT = 0; SleepBind = false;
             Model.SetVisible(true);
         }
@@ -138,12 +142,24 @@ namespace KidoTraining
             }
         }
 
+        bool DoEvade(Vector3 direction)
+        {
+            if (!Free || evadeCooldown > 0 || direction.sqrMagnitude < 0.01f) return false;
+            evadeDirection = direction.normalized;
+            evadeCooldown = 0.55f;
+            Invuln = Mathf.Max(Invuln, 0.12f);
+            SetState(FState.Evade);
+            Sfx.Play("shunpo");
+            return true;
+        }
+
         // 瞬步（靈壓→跳躍）：消耗靈壓高速衝向對手
         public bool DoDash()
         {
             if (!(Free || State == FState.Attack && StateT > 0.2f)) return false;
             if (Rei < Reiatsu.DashCost) { B.Notice(this, "靈壓不足", true); return false; }
             Rei -= Reiatsu.DashCost;
+            dashAttack = false;
             SetState(FState.Dash);
             FaceTo(Opp);
             Sfx.Play("shunpo");
@@ -260,6 +276,7 @@ namespace KidoTraining
         public void Update(float dt, Intent it)
         {
             StateT += dt;
+            evadeCooldown = Mathf.Max(0, evadeCooldown - dt);
             Invuln = Mathf.Max(0, Invuln - dt);
             GuardHp = Mathf.Min(100, GuardHp + dt * (State == FState.Guard ? 3 : 15));
             if (MarkT > 0) { MarkT -= dt; if (MarkT <= 0) MarkedBy = null; }
@@ -272,12 +289,17 @@ namespace KidoTraining
             if (it != null && State != FState.Dead)
             {
                 if (it.ChargePressed) PrimeT = 0.3f;
-                if (PrimeT > 0)
+                if (PrimeT > 0 || it.ChargeHeld)
                 {
                     PrimeT -= dt;
                     if (it.Jump) { DoDash(); PrimeT = 0; it.Jump = false; }
                 }
-                if (it.Attack) DoAttack();
+                if (it.Jump && it.GuardHeld && DoEvade(it.Move)) it.Jump = false;
+                if (it.Attack)
+                {
+                    if (State == FState.Dash && DistTo(Opp) > 2) dashAttack = true;
+                    else DoAttack();
+                }
                 if (it.Jump) DoJump();
                 DoGuard(it.GuardHeld && OnGround);
                 DoCharge(it.ChargeHeld && PrimeT <= 0 && OnGround && !it.GuardHeld);
@@ -293,14 +315,14 @@ namespace KidoTraining
                 {
                     float slow = Chanting ? 0.75f : 1f;
                     Vel.x = mv.x * sp * slow; Vel.z = mv.z * sp * slow;
-                    if (moving) { FaceDir(mv.normalized, dt * 14); State = FState.Run; }
+                    if (moving) { FaceTo(Opp, dt * 14); State = FState.Run; }
                     else { FaceTo(Opp, dt * 6); State = FState.Idle; }
                     break;
                 }
                 case FState.Air:
                     Vel.x += (mv.x * sp - Vel.x) * Mathf.Min(1, dt * 4);
                     Vel.z += (mv.z * sp - Vel.z) * Mathf.Min(1, dt * 4);
-                    if (moving) FaceDir(mv.normalized, dt * 8);
+                    FaceTo(Opp, dt * 8);
                     break;
                 case FState.Guard:
                 case FState.Charge:
@@ -316,6 +338,12 @@ namespace KidoTraining
                     }
                     if (State == FState.Cast && StateT > 0.45f) SetState(OnGround ? FState.Idle : FState.Air);
                     break;
+                case FState.Evade:
+                    FaceTo(Opp, dt * 18);
+                    Vel.x = evadeDirection.x * 15 * Ch.Speed;
+                    Vel.z = evadeDirection.z * 15 * Ch.Speed;
+                    if (StateT > 0.2f) SetState(OnGround ? FState.Idle : FState.Air);
+                    break;
                 case FState.Dash:
                 {
                     var dir = DirTo(Opp);
@@ -323,10 +351,13 @@ namespace KidoTraining
                     float v = 30 * Ch.Speed;
                     Vel = new Vector3(dir.x * v, OnGround ? 0 : (Opp.Pos.y + 0.3f - Pos.y) * 6, dir.z * v);
                     B.Afterimage(this);
-                    if (DistTo(Opp) < 1.7f || StateT > 0.55f)
+                    if (DistTo(Opp) < 1.7f || StateT > 0.8f)
                     {
                         Vel *= 0.1f;
+                        bool followUp = dashAttack && DistTo(Opp) < 2;
+                        dashAttack = false;
                         SetState(OnGround ? FState.Idle : FState.Air);
+                        if (followUp) DoAttack();
                     }
                     break;
                 }
@@ -482,6 +513,7 @@ namespace KidoTraining
                 case FState.Launched: pose = Poses.Hit; break;
                 case FState.Guard: pose = Poses.Guard; break;
                 case FState.Charge: pose = Poses.Charge; hipY = 0.95f + Mathf.Sin(t * 30) * 0.01f; break;
+                case FState.Evade:
                 case FState.Dash: pose = Poses.Dash; break;
                 case FState.Cast: pose = Poses.Cast; k = Mathf.Min(1, dt * 25); break;
                 case FState.Chant: pose = Poses.Chant; break;
