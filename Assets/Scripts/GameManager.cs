@@ -83,6 +83,10 @@ namespace KidoTraining
 
         void Start()
         {
+            if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kido-yoruichi") >= 0)
+            {
+                StartDownloadedCharacter(); return;
+            }
             // Lead with the campaign, while keeping the title available from the hub.
             if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kido-title") < 0)
                 OpenStory();
@@ -322,7 +326,7 @@ namespace KidoTraining
                 case Screen.Result: DrawHud(); DrawResult(); break;
             }
             if (screen != Screen.Fight && screen != Screen.Pause && screen != Screen.Result)
-                GUI.Label(new Rect(24, 1035, W - 48, 30), "主線・開放素材整合版 2026.10.18  |  六篇章 / 21 關", sSmall);
+                GUI.Label(new Rect(24, 1035, W - 48, 30), "主線・下載角色整合版 2026.10.18  |  夜一已替換網路模型", sSmall);
         }
 
         void Dim(float a)

@@ -4,4 +4,5 @@ PASS: no Error/Assert/Exception log entries
 Uniform/black captures omitted: 0
 PASS: default launch enters campaign; locked briefing preview does not unlock combat
 PASS: all 21 missions start with their specified stage and opponent; final mission completes
+PASS: downloaded Yoruichi instantiated in practice combat with skinned renderer and texture
 Scope: automated state checks; microphone recognition and human input are not validated. Screenshots require separate visual inspection.

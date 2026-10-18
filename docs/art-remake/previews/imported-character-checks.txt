@@ -1,0 +1,4 @@
+PASS: Yoruichi instantiates downloaded glTF mesh, source texture and 48-bone skeleton
+PASS: 11 gameplay joint mappings and both hand anchors exist
+PASS: attack pose changes skinned vertices, finite bounds; source mesh survives disposal
+Scope: basic pose retargeting, not a complete authored animation or character-specific move set.

@@ -3,7 +3,8 @@
   "reviewedOn": "2026-10-18",
   "purpose": "Noncommercial research and learning; not a third-party asset license",
   "shareReference": "https://chatgpt.com/s/t_6ad3c36621b481918c6d97c4ee4b3f01",
-  "importedThirdPartyAssetCount": 2,
+  "importedThirdPartyAssetCount": 3,
+  "characterModelManifest": "docs/asset-sources/yoruichi-model.json",
   "sources": [
     {
       "id": "bbs-model-directory",

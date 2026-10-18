@@ -35,6 +35,8 @@ namespace KidoTraining
         public Transform HandR, HandL;
         public float Scale;
         Texture2D ownedFace;
+        ImportedFighterRig imported;
+        public bool UsesImportedModel => imported != null;
 
         public Transform this[Jt j] => J[(int)j];
 
@@ -93,6 +95,17 @@ namespace KidoTraining
 
         public FighterModel(CharacterDef ch, Transform parent)
         {
+            if (ch.Id == "yoruichi")
+            {
+                var prefab = Resources.Load<ImportedFighterRig>("Characters/yoruichi");
+                if (prefab == null) throw new System.InvalidOperationException("Imported Yoruichi prefab is missing; run ImportedCharacterBuild.Prepare");
+                imported = Object.Instantiate(prefab, parent, false);
+                Root = imported.transform; Root.name = ch.Name + " [downloaded model]";
+                Scale = ch.Scale; Root.localScale = Vector3.one * Scale;
+                for (int i = 0; i < J.Length; i++) J[i] = imported.Joints[i];
+                HandR = imported.HandR; HandL = imported.HandL;
+                return;
+            }
             bool ichigo = ch.Id == "ichigo" || ch.Id == "ichigo_bankai";
             var skinShade = new Color(1f, 0.78f, 0.74f);
             var skin = Mats.Toon(ch.Skin, 0.008f, 0, skinShade, 0.2f);
@@ -369,6 +382,7 @@ namespace KidoTraining
         // 平滑逼近目標姿勢
         public void Apply(Pose p, float k)
         {
+            if (imported != null) { imported.Apply(p, k); return; }
             for (int i = 0; i < 11; i++)
             {
                 var r = p.R[i];
@@ -380,6 +394,7 @@ namespace KidoTraining
         public void Dispose()
         {
             if (Root == null) return;
+            if (imported != null) { DestroyOwned(Root.gameObject); return; }
             var meshes = new HashSet<Mesh>();
             var materials = new HashSet<Material>();
             foreach (var filter in Root.GetComponentsInChildren<MeshFilter>(true))

@@ -17,7 +17,7 @@ public static class PlayerStudyBuild
             var empty = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             EditorSceneManager.SaveScene(empty, scene);
         }
-        var path = Path.GetFullPath("../../work/player/KidoTraining.exe");
+        var path = Path.GetFullPath("Build/StoryAssets/KidoTraining.exe");
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
             scenes = new[] { scene }, locationPathName = path, target = BuildTarget.StandaloneWindows64,

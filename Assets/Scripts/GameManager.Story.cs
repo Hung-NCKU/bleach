@@ -9,6 +9,12 @@ namespace KidoTraining
         int storyMission = -1, storyArc, selectedMission;
         Vector2 missionScroll;
 
+        void StartDownloadedCharacter()
+        {
+            p1Index = System.Array.FindIndex(CharacterDef.Roster, ch => ch.Id == "yoruichi");
+            p2Index = 0; storyMode = false; StartMatch(true);
+        }
+
         void OpenStory()
         {
             EndMatch(); ShowPreviews(false);
@@ -81,6 +87,7 @@ namespace KidoTraining
             }
             GUI.EndScrollView();
             GUI.Label(new Rect(left, 810, width, 90), "目前進度：" + (campaign.Cleared?.Length ?? 0) + " / " + StoryCampaign.Missions.Length + " 關　·　下一戰：" + StoryCampaign.Missions[campaign.Unlocked].Title + "\n<size=19>每一章都能查看關卡介紹；挑戰依序解鎖。角色招式目前共用，尚無劇情過場。</size>", sCenter);
+            if (Button(new Rect(left, 815, sidebar - 16, 70), "體驗下載角色：夜一")) StartDownloadedCharacter();
             if (Button(new Rect(W / 2 - 400, 930, 380, 62), "返回標題")) GoTitle();
             if (Button(new Rect(W / 2 + 20, 930, 380, 62), "繼續主線", true)) OpenBriefing(campaign.Unlocked);
         }

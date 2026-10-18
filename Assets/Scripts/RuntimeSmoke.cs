@@ -50,6 +50,7 @@ namespace KidoTraining
                 "Uniform/black captures omitted: " + omittedCaptures + "\n" +
                 "PASS: default launch enters campaign; locked briefing preview does not unlock combat\n" +
                 "PASS: all 21 missions start with their specified stage and opponent; final mission completes\n" +
+                "PASS: downloaded Yoruichi instantiated in practice combat with skinned renderer and texture\n" +
                 "Scope: automated state checks; microphone recognition and human input are not validated. Screenshots require separate visual inspection.\n");
             Application.Quit(0);
         }
@@ -128,6 +129,13 @@ namespace KidoTraining
                 yield return null;
             }
             Require(campaign.Cleared.Length == StoryCampaign.Missions.Length, "Campaign finale did not complete");
+            Call(gm, "StartDownloadedCharacter");
+            battle = (Battle)Field(gm, "battle");
+            Require(battle.P1.Ch.Id == "yoruichi" && battle.P1.Model.UsesImportedModel, "Downloaded fighter not used in combat");
+            var skin = battle.P1.Model.Root.GetComponentInChildren<SkinnedMeshRenderer>();
+            Require(skin != null && skin.sharedMaterial.mainTexture != null && skin.bones.Length >= 40, "Downloaded fighter lost texture/skeleton");
+            for (int i = 0; i < 20; i++) yield return null;
+            Snapshot("UI-downloaded-yoruichi"); yield return new WaitForSecondsRealtime(0.3f);
             Call(gm, "GoTitle");
             Require(Field(gm, "battle") == null && !(bool)Field(gm, "storyMode"), "Story state leaked into free battle");
             var screenType = typeof(GameManager).GetNestedType("Screen", BindingFlags.NonPublic);

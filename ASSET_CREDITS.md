@@ -8,7 +8,7 @@
 - 語音辨識：Vosk 與中文模型；漢字讀音資料：pinyin-data。原有來源與授權說明見 [README](README.md#第三方資源)。
 - BLEACH 的角色、作品名稱與世界觀權利屬其各自權利人；本專案沒有因此取得官方模型、OST 或配音的再散布授權。
 
-**已實際匯入 ambientCG 的兩張 CC0 場景色彩貼圖（瀞靈廷石板、虛圈沙地），來源及 SHA-256 見 [imported-assets.json](docs/asset-sources/imported-assets.json)。沒有匯入第三方角色模型、官方 OST 或官方角色語音。**
+**已實際匯入 ambientCG 的兩張 CC0 場景色彩貼圖，以及下列下載夜一模型；沒有匯入官方 OST 或官方角色語音。**
 
 ## 參考來源與候選素材
 
@@ -29,5 +29,22 @@ The Models Resource 的[使用條款](https://models.spriters-resource.com/page/
 未來真正匯入的每個檔案應記錄：名稱、作者／權利人、來源 URL、授權或許可依據、修改內容、檔案校驗碼，以及可否公開散布。新增的兩張通用貼圖依 CC0 使用；其他候選維持未匯入狀態。
 
 調查日期：2026-10-18。
+
+## 已使用的下載角色
+
+**Cha Yoruichi** — [anywhere 3D](https://sketchfab.com/stephanua.gr)，
+[原頁](https://sketchfab.com/3d-models/cha-yoruichi-3013541bdafb477ea8610bb1cda74128)。
+Sketchfab 公開 API 標示 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。
+透過 [AllenAI Objaverse](https://huggingface.co/datasets/allenai/objaverse) 的公開物件鏡像取得。
+資料集為 ODC-By 1.0，個別模型沿用原作者 CC 授權。
+此模型不是本專案原創；角色權利仍屬各自權利人。
+
+原始 GLB 位於 `Assets/ImportedCharacters/Source/Yoruichi.glb`，位元組未修改。
+適配內容：縮放與原點、卡通材質、48 根原骨骼中的 11 個關節對應遊戲姿勢。
+選角、頭像與戰鬥中的夜一均使用此模型。來源及 SHA-256 見
+[yoruichi-model.json](docs/asset-sources/yoruichi-model.json)。
+
+匯入器 [glTFast v5.0.4 / Andreas Atteneder](https://github.com/atteneder/glTFast/tree/v5.0.4)
+採 Apache-2.0，授權保留於 `ThirdPartyNotices/glTFast/LICENSE.md`。
 
 公開／開源候選與採用順序見 [open-resources.md](docs/asset-sources/open-resources.md)，涵蓋動畫、材質、卡通渲染與 BLEACH 資料庫；候選未視為已匯入素材。

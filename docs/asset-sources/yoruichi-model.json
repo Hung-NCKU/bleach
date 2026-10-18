@@ -1,0 +1,23 @@
+{
+  "uid": "3013541bdafb477ea8610bb1cda74128",
+  "name": "Cha Yoruichi",
+  "author": "anywhere 3D",
+  "authorUrl": "https://sketchfab.com/stephanua.gr",
+  "sourceUrl": "https://sketchfab.com/3d-models/cha-yoruichi-3013541bdafb477ea8610bb1cda74128",
+  "license": {
+    "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution",
+    "fullName": "Creative Commons Attribution",
+    "requirements": "Author must be credited. Commercial use is allowed.",
+    "url": "http://creativecommons.org/licenses/by/4.0/",
+    "slug": "by"
+  },
+  "vertexCount": 1579,
+  "faceCount": 3038,
+  "isDownloadable": true,
+  "downloadUrl": "https://huggingface.co/datasets/allenai/objaverse/resolve/main/glbs/000-004/3013541bdafb477ea8610bb1cda74128.glb",
+  "retrievedOn": "2026-10-18",
+  "sha256": "8c8a15070b4af7c1ef551f8d4367cce72b0ba0b6237e714837e1f48b328b94fa",
+  "modifications": "Source GLB unchanged. Scale/pivot normalized; toon material assigned; 11 authored bones mapped to gameplay poses.",
+  "usage": "Replaces procedural yoruichi in portraits, character selection and combat."
+}
