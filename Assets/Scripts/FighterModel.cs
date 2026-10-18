@@ -36,9 +36,26 @@ namespace KidoTraining
         public float Scale;
         Texture2D ownedFace;
         ImportedFighterRig imported;
+        Vector3 importedHipRest;
         public bool UsesImportedModel => imported != null;
 
         public Transform this[Jt j] => J[(int)j];
+
+        public void SetHipHeight(float height)
+        {
+            var hips = J[(int)Jt.Hips];
+            if (imported != null)
+            {
+                var current = Root.InverseTransformPoint(hips.position);
+                hips.position = Root.TransformPoint(Vector3.Lerp(current, importedHipRest + Vector3.up * (height - 0.98f), 0.3f));
+            }
+            else
+            {
+                var position = hips.localPosition;
+                position.y = Mathf.Lerp(position.y,height,0.3f);
+                hips.localPosition = position;
+            }
+        }
 
         public static Quaternion Q(float x, float y, float z) =>
             Quaternion.AngleAxis(x * Mathf.Rad2Deg, Vector3.right) *
@@ -102,6 +119,7 @@ namespace KidoTraining
                 Root = imported.transform; Root.name = ch.Name + " [downloaded model]";
                 Scale = ch.Scale; Root.localScale = Vector3.one * Scale;
                 for (int i = 0; i < J.Length; i++) J[i] = imported.Joints[i];
+                importedHipRest = Root.InverseTransformPoint(J[(int)Jt.Hips].position);
                 HandR = imported.HandR; HandL = imported.HandL;
                 return;
             }

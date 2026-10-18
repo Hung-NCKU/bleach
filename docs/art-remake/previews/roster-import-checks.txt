@@ -18,3 +18,5 @@ PASS: aizen imported, textured, mapped and skinned
 PASS: soifon imported, textured, mapped and skinned
 PASS: szayel imported, textured, mapped and skinned
 PASS: kira imported, textured, mapped and skinned
+PASS: unohana imported, textured, mapped and skinned
+PASS: urahara imported, textured, mapped and skinned

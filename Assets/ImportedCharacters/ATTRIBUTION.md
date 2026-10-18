@@ -35,3 +35,17 @@ The project does not claim authorship of this model or ownership of BLEACH.
 
 Verification date, original metadata and SHA-256:
 `docs/asset-sources/yoruichi-model.json`.
+
+## Sketchfab FBX additions
+
+Retsu Unohana Bleach Mobile — Fahad1l:
+https://sketchfab.com/3d-models/retsu-unohana-bleach-mobile-fb8aa3e76cd140029fa94e42be83750b
+
+Kisuke Urahara (Bleach: Paradise Lost) — Cyrone:
+https://sketchfab.com/3d-models/kisuke-urahara-d3bb086b72ec4cf295cfa7b9264ef5e9
+
+Both upload pages declare CC Attribution 4.0:
+https://creativecommons.org/licenses/by/4.0/
+Original FBX meshes, skin weights and texture pixels retained. Game adaptations:
+normalized dimensions, toon material, arms-down pose mapping and Urahara weapon attachment.
+Underlying BLEACH/game rights remain with their owners.

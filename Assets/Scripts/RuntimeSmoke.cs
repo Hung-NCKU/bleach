@@ -154,7 +154,10 @@ namespace KidoTraining
                         if (material.mainTexture != null) sharedTexture = material.mainTexture;
                 Require(sharedTexture != null, "No texture for " + CharacterDef.Roster[n].Id);
                 for (int frame = 0; frame < 12; frame++) yield return null;
-                if (CharacterDef.Roster[n].Id == "hitsugaya" || CharacterDef.Roster[n].Id == "byakuya")
+                var localHead = battle.P1.Model.Root.InverseTransformPoint(battle.P1.Model[Jt.Head].position);
+                Require(localHead.y > 0.5f && localHead.y < 3 && new Vector2(localHead.x,localHead.z).magnitude < 1,
+                    "Imported body left its fighter position: " + CharacterDef.Roster[n].Id + " " + localHead);
+                if (CharacterDef.Roster[n].Id == "hitsugaya" || CharacterDef.Roster[n].Id == "byakuya" || CharacterDef.Roster[n].Id == "unohana" || CharacterDef.Roster[n].Id == "urahara")
                 { Snapshot("UI-model-" + CharacterDef.Roster[n].Id); yield return new WaitForSecondsRealtime(0.3f); }
                 Call(gm, "GoTitle"); yield return null;
                 Require(sharedMesh != null && sharedTexture != null, "Disposal destroyed imported assets");

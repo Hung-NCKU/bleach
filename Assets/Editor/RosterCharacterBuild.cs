@@ -9,7 +9,7 @@ using Pose = KidoTraining.Pose;
 
 public static class RosterCharacterBuild
 {
-    [Serializable] public class Entry { public string id, path, sourceUrl, author, game; }
+    [Serializable] public class Entry { public string id, path, sourceUrl, author, game, texturePath, weaponBone; }
     [Serializable] public class Manifest { public Entry[] characters; }
     public static void ValidateAndBuild()
     {
@@ -35,6 +35,7 @@ public static class RosterCharacterBuild
         foreach (string alias in aliases)
         {
             var node = nodes.FirstOrDefault(t => string.Equals(t.name, alias, StringComparison.OrdinalIgnoreCase));
+            if (node == null && alias.StartsWith("Bip01 ")) node = nodes.FirstOrDefault(t => t.name == alias.Replace("Bip01 ", "Bip001 "));
             if (node != null) return node;
         }
         throw new Exception("Missing bone " + string.Join("/", aliases));
@@ -48,6 +49,7 @@ public static class RosterCharacterBuild
         {
             var model = (GameObject)PrefabUtility.InstantiatePrefab(source);
             model.transform.SetParent(root.transform, false);
+            foreach(var animator in model.GetComponentsInChildren<Animator>()) UnityEngine.Object.DestroyImmediate(animator);
             // PSP exports use Z as their vertical axis; Wii exports already use Y.
             if (entry.sourceUrl.Contains("/psp/")) model.transform.localRotation = Quaternion.Euler(-90, 0, 0) * model.transform.localRotation;
             var skins = model.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -90,6 +92,7 @@ public static class RosterCharacterBuild
                     if (!allMaterials.TryGetValue(from, out var converted))
                     {
                         Texture texture = from.mainTexture;
+                        if (!string.IsNullOrEmpty(entry.texturePath)) texture = AssetDatabase.LoadAssetAtPath<Texture2D>(entry.texturePath);
                         if (texture == null)
                         {
                             string materialName = from.name.Replace(" (Instance)", "");
@@ -122,6 +125,12 @@ public static class RosterCharacterBuild
                 var arm = rig.Joints[(int)Jt.ArmL + side];
                 var forearm = rig.Joints[(int)Jt.ForeL + side];
                 arm.rotation = Quaternion.FromToRotation(forearm.position - arm.position, Vector3.down) * arm.rotation;
+            }
+            if (!string.IsNullOrEmpty(entry.weaponBone))
+            {
+                var weapon = Find(nodes,entry.weaponBone);
+                weapon.SetParent(rig.HandR,true);
+                weapon.position = rig.HandR.position;
             }
             for (int i = 0; i < rig.Joints.Length; i++)
             {

@@ -139,6 +139,23 @@
       "sourceUrl": "https://thunderstore.io/c/lethal-company/p/TsuShi/IzuruKira/",
       "author": "TsuShi",
       "game": "BLEACH character model; IzuruKira mod 0.1.0"
+    },
+    {
+      "id": "unohana",
+      "path": "Assets/ImportedCharacters/Roster/unohana/model.fbx",
+      "sourceUrl": "https://sketchfab.com/3d-models/retsu-unohana-bleach-mobile-fb8aa3e76cd140029fa94e42be83750b",
+      "author": "Fahad1l",
+      "game": "Bleach Mobile",
+      "texturePath": "Assets/ImportedCharacters/Roster/unohana/515181.png"
+    },
+    {
+      "id": "urahara",
+      "path": "Assets/ImportedCharacters/Roster/urahara/model.fbx",
+      "sourceUrl": "https://sketchfab.com/3d-models/kisuke-urahara-d3bb086b72ec4cf295cfa7b9264ef5e9",
+      "author": "Cyrone",
+      "game": "Bleach: Paradise Lost",
+      "texturePath": "Assets/ImportedCharacters/Roster/urahara/texture.png",
+      "weaponBone": "wp1"
     }
   ]
 }

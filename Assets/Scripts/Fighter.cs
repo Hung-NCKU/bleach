@@ -455,7 +455,6 @@ namespace KidoTraining
         void Animate(float dt)
         {
             var root = Model.Root;
-            var hips = Model[Jt.Hips];
             float t = Time.time;
             Pose pose = Poses.Idle;
             float k = Mathf.Min(1, dt * 14);
@@ -508,9 +507,7 @@ namespace KidoTraining
                     k = Mathf.Min(1, dt * 30);
                     break;
             }
-            var hp = hips.localPosition;
-            hp.y = Mathf.Lerp(hp.y, hipY, 0.3f);
-            hips.localPosition = hp;
+            Model.SetHipHeight(hipY);
             Model.Apply(pose, k);
 
             // 倒地：整體後仰躺平
