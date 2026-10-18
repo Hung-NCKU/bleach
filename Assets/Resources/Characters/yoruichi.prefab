@@ -43,8 +43,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d50d3d1c42311447a57b500ce4fba11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   Joints:
   - {fileID: 2863868527300752331}
   - {fileID: 1223709232687686588}
@@ -179,7 +179,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8052201125101325364, guid: f8d01124a8e348940a882832224e4eb2, type: 3}
       propertyPath: m_Materials.Array.data[0]
-      value: 
+      value:
       objectReference: {fileID: 2100000, guid: 410cd2f0d81129442a16ec4ffbe289fd, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
