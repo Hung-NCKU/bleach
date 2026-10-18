@@ -11,8 +11,15 @@ namespace KidoTraining
 
         void StartDownloadedCharacter()
         {
-            p1Index = System.Array.FindIndex(CharacterDef.Roster, ch => ch.Id == "yoruichi");
-            p2Index = 0; storyMode = false; StartMatch(true);
+            StartCharacterPractice("yoruichi");
+        }
+
+        bool StartCharacterPractice(string id)
+        {
+            int index=System.Array.FindIndex(CharacterDef.Roster,ch=>ch.Id==id);
+            if(index<0 || Resources.Load<ImportedFighterRig>("Characters/"+id)==null) return false;
+            p1Index=index; p2Index=0; storyMode=false; StartMatch(true);
+            return true;
         }
 
         void OpenStory()

@@ -247,6 +247,21 @@
       "archiveSha256": "a6238353f6e7cf217ba84c55b02e5a2d21c7632250c96899610c0a22bc8d234e",
       "modifications": "Original FBX skeleton, skin weights and texture pixels retained; axis/scale/pivot and toon materials adapted; game joint mapping added. Urahara wp1 weapon bone follows the right hand.",
       "rights": "Credit the named Sketchfab uploader. Original BLEACH/game rights remain with their respective owners; uploader license is recorded as declared, not independent proof of underlying IP authorization."
+    },
+    {
+      "id": "asnodt",
+      "path": "Assets/ImportedCharacters/Roster/asnodt/source.prefab",
+      "sourceUrl": "https://steamcommunity.com/sharedfiles/filedetails/?id=3173466403",
+      "author": "Madness Overload; original model and textures: KLab / BLEACH Brave Souls",
+      "game": "BLEACH Brave Souls",
+      "yaw": -90,
+      "workshopId": "3173466403",
+      "retrieved": "2026-10-18",
+      "archiveSha256": "98edd08790cc61e6e7566a3c18655b2ac4763e08f6ca64f5c4a7cbc49960580a",
+      "license": "No open-source license declared; original BLEACH Brave Souls game assets.",
+      "modifications": "SteamCMD public anonymous download; GMA data extraction; Crowbar 0.74 reference SMD; VTF decoded with srctools 2.7.0; Source bones, weights, UV and triangle groups converted to Unity. Body and bracelets retained; optional broken mantle/thorns omitted. Normalized size, axis and yaw; game pose mapping added.",
+      "process": "docs/asset-sources/source-model-pipeline.md",
+      "rights": "Workshop uploader Madness Overload credits original BLEACH Brave Souls model/texture developers. Original rights remain with KLab and BLEACH rights holders; not project-original art or CC0."
     }
   ]
 }

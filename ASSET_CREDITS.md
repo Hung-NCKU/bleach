@@ -50,7 +50,7 @@ Sketchfab 公開 API 標示 [CC BY 4.0](https://creativecommons.org/licenses/by/
 公開／開源候選與採用順序見 [open-resources.md](docs/asset-sources/open-resources.md)，涵蓋動畫、材質、卡通渲染與 BLEACH 資料庫；候選未視為已匯入素材。
 # 本輪角色模型整合
 
-已使用 23 名下載角色的骨架模型與貼圖，完整進度見
+已使用 24 名下載角色的骨架模型與貼圖，完整進度見
 [角色替換清單](docs/art-remake/ROSTER-REPLACEMENT.md)。
 Models Resource 的 19 名來源及 TsuShi 的吉良模型逐項列於
 [來源、署名與 SHA-256](docs/asset-sources/roster-models.json)。

@@ -142,8 +142,9 @@ namespace KidoTraining
             {
                 var prefab = Resources.Load<ImportedFighterRig>("Characters/" + CharacterDef.Roster[n].Id);
                 if (prefab == null) continue;
-                Set(gm, "p1Index", n); Call(gm, "StartMatch", true);
+                Call(gm, "StartCharacterPractice", CharacterDef.Roster[n].Id);
                 battle = (Battle)Field(gm, "battle");
+                Require(battle.P1.Ch.Id == CharacterDef.Roster[n].Id,"Character practice selected the wrong fighter");
                 Require(battle.P1.Model.UsesImportedModel, "Procedural fallback used for " + CharacterDef.Roster[n].Id);
                 var skins = battle.P1.Model.Root.GetComponentsInChildren<SkinnedMeshRenderer>();
                 Require(skins.Length > 0, "No skin for " + CharacterDef.Roster[n].Id);
@@ -157,13 +158,15 @@ namespace KidoTraining
                 var localHead = battle.P1.Model.Root.InverseTransformPoint(battle.P1.Model[Jt.Head].position);
                 Require(localHead.y > 0.5f && localHead.y < 3 && new Vector2(localHead.x,localHead.z).magnitude < 1,
                     "Imported body left its fighter position: " + CharacterDef.Roster[n].Id + " " + localHead);
-                if (CharacterDef.Roster[n].Id == "hitsugaya" || CharacterDef.Roster[n].Id == "byakuya" || CharacterDef.Roster[n].Id == "unohana" || CharacterDef.Roster[n].Id == "urahara")
+                if (CharacterDef.Roster[n].Id == "hitsugaya" || CharacterDef.Roster[n].Id == "byakuya" || CharacterDef.Roster[n].Id == "unohana" || CharacterDef.Roster[n].Id == "urahara" || CharacterDef.Roster[n].Id == "asnodt")
                 { Snapshot("UI-model-" + CharacterDef.Roster[n].Id); yield return new WaitForSecondsRealtime(0.3f); }
                 Call(gm, "GoTitle"); yield return null;
                 Require(sharedMesh != null && sharedTexture != null, "Disposal destroyed imported assets");
                 importedCount++;
             }
             Call(gm, "GoTitle");
+            Call(gm,"StartCharacterPractice","unknown-character");
+            Require(Field(gm,"battle")==null,"Invalid character practice created a match");
             Require(Field(gm, "battle") == null && !(bool)Field(gm, "storyMode"), "Story state leaked into free battle");
             var screenType = typeof(GameManager).GetNestedType("Screen", BindingFlags.NonPublic);
             Set(gm, "screen", Enum.Parse(screenType, "Select"));

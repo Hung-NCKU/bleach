@@ -20,3 +20,4 @@ PASS: szayel imported, textured, mapped and skinned
 PASS: kira imported, textured, mapped and skinned
 PASS: unohana imported, textured, mapped and skinned
 PASS: urahara imported, textured, mapped and skinned
+PASS: asnodt imported, textured, mapped and skinned

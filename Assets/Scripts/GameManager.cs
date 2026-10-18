@@ -83,6 +83,9 @@ namespace KidoTraining
 
         void Start()
         {
+            var args=System.Environment.GetCommandLineArgs();
+            int characterArg=System.Array.IndexOf(args,"-kido-character");
+            if(characterArg>=0 && characterArg+1<args.Length && StartCharacterPractice(args[characterArg+1])) return;
             if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kido-yoruichi") >= 0)
             {
                 StartDownloadedCharacter(); return;

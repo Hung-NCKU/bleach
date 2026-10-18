@@ -156,6 +156,14 @@
       "game": "Bleach: Paradise Lost",
       "texturePath": "Assets/ImportedCharacters/Roster/urahara/texture.png",
       "weaponBone": "wp1"
+    },
+    {
+      "id": "asnodt",
+      "path": "Assets/ImportedCharacters/Roster/asnodt/source.prefab",
+      "sourceUrl": "https://steamcommunity.com/sharedfiles/filedetails/?id=3173466403",
+      "author": "Madness Overload; original model and textures: KLab / BLEACH Brave Souls",
+      "game": "BLEACH Brave Souls",
+      "yaw": -90
     }
   ]
 }

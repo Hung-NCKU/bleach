@@ -49,3 +49,13 @@ https://creativecommons.org/licenses/by/4.0/
 Original FBX meshes, skin weights and texture pixels retained. Game adaptations:
 normalized dimensions, toon material, arms-down pose mapping and Urahara weapon attachment.
 Underlying BLEACH/game rights remain with their owners.
+
+## As Nodt — Source model conversion
+
+Workshop uploader: Madness Overload
+https://steamcommunity.com/sharedfiles/filedetails/?id=3173466403
+Original model and textures: BLEACH Brave Souls developers / KLab, as credited by uploader.
+No open-source license is claimed. Body and bracelets used; source mantle/thorns omitted.
+Source hierarchy, skin weights, triangles and UV retained through SMD conversion;
+VTF textures decoded to PNG; dimensions, orientation, toon material and gameplay joints adapted.
+See `docs/asset-sources/asnodt-model.json` for archive hash and conversion record.

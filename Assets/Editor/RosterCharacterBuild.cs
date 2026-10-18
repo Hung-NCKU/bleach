@@ -9,7 +9,7 @@ using Pose = KidoTraining.Pose;
 
 public static class RosterCharacterBuild
 {
-    [Serializable] public class Entry { public string id, path, sourceUrl, author, game, texturePath, weaponBone; }
+    [Serializable] public class Entry { public string id, path, sourceUrl, author, game, texturePath, weaponBone; public float yaw; }
     [Serializable] public class Manifest { public Entry[] characters; }
     public static void ValidateAndBuild()
     {
@@ -36,6 +36,13 @@ public static class RosterCharacterBuild
         {
             var node = nodes.FirstOrDefault(t => string.Equals(t.name, alias, StringComparison.OrdinalIgnoreCase));
             if (node == null && alias.StartsWith("Bip01 ")) node = nodes.FirstOrDefault(t => t.name == alias.Replace("Bip01 ", "Bip001 "));
+            if (node == null && alias.StartsWith("Bip01 "))
+            {
+                string valve="ValveBiped.Bip01_"+alias.Substring(6).Replace(' ','_');
+                if(valve.EndsWith("_Head")) valve+="1";
+                if(valve.EndsWith("_Spine1")) valve=valve.Replace("_Spine1","_Spine2");
+                node=nodes.FirstOrDefault(t=>t.name==valve);
+            }
             if (node != null) return node;
         }
         throw new Exception("Missing bone " + string.Join("/", aliases));
@@ -49,6 +56,7 @@ public static class RosterCharacterBuild
         {
             var model = (GameObject)PrefabUtility.InstantiatePrefab(source);
             model.transform.SetParent(root.transform, false);
+            model.transform.localRotation=Quaternion.Euler(0,entry.yaw,0)*model.transform.localRotation;
             foreach(var animator in model.GetComponentsInChildren<Animator>()) UnityEngine.Object.DestroyImmediate(animator);
             // PSP exports use Z as their vertical axis; Wii exports already use Y.
             if (entry.sourceUrl.Contains("/psp/")) model.transform.localRotation = Quaternion.Euler(-90, 0, 0) * model.transform.localRotation;
