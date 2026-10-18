@@ -95,11 +95,10 @@ namespace KidoTraining
 
         public FighterModel(CharacterDef ch, Transform parent)
         {
-            if (ch.Id == "yoruichi")
+            var downloadedPrefab = Resources.Load<ImportedFighterRig>("Characters/" + ch.Id);
+            if (downloadedPrefab != null)
             {
-                var prefab = Resources.Load<ImportedFighterRig>("Characters/yoruichi");
-                if (prefab == null) throw new System.InvalidOperationException("Imported Yoruichi prefab is missing; run ImportedCharacterBuild.Prepare");
-                imported = Object.Instantiate(prefab, parent, false);
+                imported = Object.Instantiate(downloadedPrefab, parent, false);
                 Root = imported.transform; Root.name = ch.Name + " [downloaded model]";
                 Scale = ch.Scale; Root.localScale = Vector3.one * Scale;
                 for (int i = 0; i < J.Length; i++) J[i] = imported.Joints[i];

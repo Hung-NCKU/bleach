@@ -1,0 +1,223 @@
+{
+  "characters": [
+    {
+      "id": "ichigo",
+      "path": "Assets/ImportedCharacters/Roster/ichigo/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/285620/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7",
+      "archiveSha256": "7beea2a14f38feb49235a7d090f06f59f3ca82a5a0565d6a74d0cb7c73f02259",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "ichigo_bankai",
+      "path": "Assets/ImportedCharacters/Roster/ichigo_bankai/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/284221/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7",
+      "archiveSha256": "1745a36d41adc2fb4a7ce55ad976f4c2a92ae4bcca28e608da3eee9a8f7adea2",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "byakuya",
+      "path": "Assets/ImportedCharacters/Roster/byakuya/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/284223/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7",
+      "archiveSha256": "f87c885b0ff309c6019fcc4cd9488107a2ccebf94a996f99a31b45f61c3de361",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "rukia",
+      "path": "Assets/ImportedCharacters/Roster/rukia/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282998/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "88c1f94bd465389ecb0f494411124a82b5fa0bfbaa068a2b8dd95eae83ce82c7",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "uryu",
+      "path": "Assets/ImportedCharacters/Roster/uryu/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283003/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "3b5bf463f32697574afb6ebb78673e55029dd1af473cb1f09814d343bce58b35",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "chad",
+      "path": "Assets/ImportedCharacters/Roster/chad/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/287216/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7",
+      "archiveSha256": "b79c3498889e92e8305255cc9d42acbc9e4b5859577ba4a9be952391cb2d1013",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "gin",
+      "path": "Assets/ImportedCharacters/Roster/gin/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282924/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "861bf3677c0741e9cc1ad98c473e89da5dccca784a6f64ed737fe2b27f1830e3",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "grimmjow",
+      "path": "Assets/ImportedCharacters/Roster/grimmjow/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282866/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "6bbaed37aca2c0b051edf3037dc1783c77e69440f1c168b6a215ec289349192d",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "nel",
+      "path": "Assets/ImportedCharacters/Roster/nel/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282869/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "90d2a13f3a8ae57e81399537e36b104fe6d99841680603a3679408c4303fe9dd",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "ulquiorra",
+      "path": "Assets/ImportedCharacters/Roster/ulquiorra/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283002/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "9adc8a32c51c707dbe36ad3cc9452193477c43decc4cead060739794252db14c",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "hitsugaya",
+      "path": "Assets/ImportedCharacters/Roster/hitsugaya/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282922/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "4fed3893692f1fa08bdf69af90407f81847390a73bef6f56647956eff0cda662",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "tosen",
+      "path": "Assets/ImportedCharacters/Roster/tosen/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283001/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "69d91d86194cee060ec58adcbd868388a7839e47413394d6844cbd1eecbda270",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "kenpachi",
+      "path": "Assets/ImportedCharacters/Roster/kenpachi/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282927/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "2eb08870a06b5f3016906f593c44b11c537cc695d2d112162d8f94a39b56f74c",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "mayuri",
+      "path": "Assets/ImportedCharacters/Roster/mayuri/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282939/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "39f4c77b2e655b2dde98734327090a8452da560661552625b7feaee35c6f2fd6",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "rangiku",
+      "path": "Assets/ImportedCharacters/Roster/rangiku/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282995/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "45638018a0641366c3cba85d79372ce5e77c5594a2545389490951aa3a0fe7c8",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "renji",
+      "path": "Assets/ImportedCharacters/Roster/renji/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282997/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "f929c17c4107bdf61d0b6d1bb19ed2d97181e1e703d1791e87382cc0c67e09ff",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "aizen",
+      "path": "Assets/ImportedCharacters/Roster/aizen/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282865/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "2240319068de8404cc17245c027cf9509446f32231b523a4dc2ec4668d80cb4a",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "soifon",
+      "path": "Assets/ImportedCharacters/Roster/soifon/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282999/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "c68f3041c5da59bcfad4435833722f509f861c90f623699c8b130d68340e751f",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "szayel",
+      "path": "Assets/ImportedCharacters/Roster/szayel/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283000/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade",
+      "archiveSha256": "7d0befdec0c1b967618cd1b51829092a0d54a1b832466e0e87058367262777b4",
+      "modifications": "Selected skinned DAE variant; local texture paths normalized. Original mesh, UVs, skin weights and texture pixels retained.",
+      "rights": "Original game assets; retain game rights holder and submitter credits. Not CC0 or original project artwork.",
+      "termsUrl": "https://models.spriters-resource.com/page/tou/"
+    },
+    {
+      "id": "kira",
+      "path": "Assets/ImportedCharacters/Roster/kira/source.prefab",
+      "sourceUrl": "https://thunderstore.io/c/lethal-company/p/TsuShi/IzuruKira/",
+      "author": "TsuShi",
+      "game": "BLEACH character model; IzuruKira mod 0.1.0",
+      "modifications": "Embedded UnityFS model data extracted without executing mod DLL. Mesh and skeleton retained; texture read back to PNG; mod-only and missing scripts removed. Arms-down base and game pose adapter added.",
+      "rights": "Mod uploader credit TsuShi; underlying BLEACH character rights remain with their owners. No open-source license claim.",
+      "archiveSha256": "7ed042a365e5ebcafe8b7e2a8a79a22f13bd47f0f0a7b879a5bf741dbe8a734f"
+    }
+  ]
+}

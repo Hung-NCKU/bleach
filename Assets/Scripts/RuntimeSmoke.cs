@@ -15,6 +15,7 @@ namespace KidoTraining
         readonly List<string> errors = new List<string>();
         string folder;
         int omittedCaptures;
+        int importedCount;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void StartIfRequested()
@@ -51,6 +52,7 @@ namespace KidoTraining
                 "PASS: default launch enters campaign; locked briefing preview does not unlock combat\n" +
                 "PASS: all 21 missions start with their specified stage and opponent; final mission completes\n" +
                 "PASS: downloaded Yoruichi instantiated in practice combat with skinned renderer and texture\n" +
+                "PASS: " + importedCount + " downloaded roster models instantiated in combat; shared meshes and textures survive match disposal\n" +
                 "Scope: automated state checks; microphone recognition and human input are not validated. Screenshots require separate visual inspection.\n");
             Application.Quit(0);
         }
@@ -136,6 +138,28 @@ namespace KidoTraining
             Require(skin != null && skin.sharedMaterial.mainTexture != null && skin.bones.Length >= 40, "Downloaded fighter lost texture/skeleton");
             for (int i = 0; i < 20; i++) yield return null;
             Snapshot("UI-downloaded-yoruichi"); yield return new WaitForSecondsRealtime(0.3f);
+            for (int n = 0; n < CharacterDef.Roster.Length; n++)
+            {
+                var prefab = Resources.Load<ImportedFighterRig>("Characters/" + CharacterDef.Roster[n].Id);
+                if (prefab == null) continue;
+                Set(gm, "p1Index", n); Call(gm, "StartMatch", true);
+                battle = (Battle)Field(gm, "battle");
+                Require(battle.P1.Model.UsesImportedModel, "Procedural fallback used for " + CharacterDef.Roster[n].Id);
+                var skins = battle.P1.Model.Root.GetComponentsInChildren<SkinnedMeshRenderer>();
+                Require(skins.Length > 0, "No skin for " + CharacterDef.Roster[n].Id);
+                var sharedMesh = skins[0].sharedMesh;
+                Texture sharedTexture = null;
+                foreach (var renderer in skins)
+                    foreach (var material in renderer.sharedMaterials)
+                        if (material.mainTexture != null) sharedTexture = material.mainTexture;
+                Require(sharedTexture != null, "No texture for " + CharacterDef.Roster[n].Id);
+                for (int frame = 0; frame < 12; frame++) yield return null;
+                if (CharacterDef.Roster[n].Id == "hitsugaya" || CharacterDef.Roster[n].Id == "byakuya")
+                { Snapshot("UI-model-" + CharacterDef.Roster[n].Id); yield return new WaitForSecondsRealtime(0.3f); }
+                Call(gm, "GoTitle"); yield return null;
+                Require(sharedMesh != null && sharedTexture != null, "Disposal destroyed imported assets");
+                importedCount++;
+            }
             Call(gm, "GoTitle");
             Require(Field(gm, "battle") == null && !(bool)Field(gm, "storyMode"), "Story state leaked into free battle");
             var screenType = typeof(GameManager).GetNestedType("Screen", BindingFlags.NonPublic);

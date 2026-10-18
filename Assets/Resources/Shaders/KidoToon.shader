@@ -5,6 +5,8 @@ Shader "Kido/Toon"
     {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Texture", 2D) = "white" {}
+        _Cutoff ("Alpha Cutoff", Range(0,1)) = 0
+        [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Surface Culling", Float) = 2
         _TextureSaturation ("Texture Saturation", Range(0,1)) = 1
         _TextureContrast ("Texture Contrast", Range(0,1)) = 1
         _ShadeColor ("Shade Tint", Color) = (0.72,0.68,0.8,1)
@@ -47,6 +49,7 @@ Shader "Kido/Toon"
             }
             fixed4 frag (v2f i) : SV_Target
             {
+                clip(_Outline - 0.000001);
                 fixed4 c = fixed4(lerp(_OutlineColor.rgb, _Color.rgb * 0.25, 0.25), 1);
                 UNITY_APPLY_FOG(i.fogCoord, c);
                 return c;
@@ -57,6 +60,7 @@ Shader "Kido/Toon"
         Pass
         {
             Tags { "LightMode"="ForwardBase" }
+            Cull [_Cull]
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -66,7 +70,7 @@ Shader "Kido/Toon"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
             fixed4 _Color, _ShadeColor, _Emission;
-            float _ShadeStep, _Spec, _Rim, _TextureSaturation, _TextureContrast;
+            float _ShadeStep, _Spec, _Rim, _TextureSaturation, _TextureContrast, _Cutoff;
             sampler2D _MainTex;
             float4 _MainTex_ST;
             struct v2f
@@ -98,7 +102,9 @@ Shader "Kido/Toon"
                 float sh = SHADOW_ATTENUATION(i);
                 // 二階明暗：亮部／帶色陰影，交界柔化
                 float lit = smoothstep(_ShadeStep - 0.04, _ShadeStep + 0.04, ndl) * smoothstep(0.3, 0.6, sh);
-                float3 texel = tex2D(_MainTex, i.uv).rgb;
+                float4 sampled = tex2D(_MainTex, i.uv);
+                clip(sampled.a - _Cutoff);
+                float3 texel = sampled.rgb;
                 texel = lerp(dot(texel, float3(0.2126, 0.7152, 0.0722)).xxx, texel, _TextureSaturation);
                 texel = lerp(float3(1, 1, 1), texel, _TextureContrast);
                 float3 albedo = _Color.rgb * texel;

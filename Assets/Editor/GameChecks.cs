@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -86,7 +87,7 @@ public static class GameChecks
             battle.PlayerCast(new VoiceCaster.CastResult { Ok = true, SpellId = "test", Accuracy = 1, Completeness = 1 });
             Require(battle.Effects.Count == 0 && !Spells.Playable.Contains("test"), "Free test spell escaped into competitive/story play");
             var commonCube = MeshGen.Cube();
-            var disposable = new FighterModel(CharacterDef.Ichigo, host.transform);
+            var disposable = new FighterModel(CharacterDef.Roster.First(c => Resources.Load<ImportedFighterRig>("Characters/" + c.Id) == null), host.transform);
             Mesh ownFace = null;
             foreach (var filter in disposable.Root.GetComponentsInChildren<MeshFilter>())
                 if (filter.name == "face") ownFace = filter.sharedMesh;

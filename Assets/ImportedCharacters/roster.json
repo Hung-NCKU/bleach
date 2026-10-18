@@ -1,0 +1,144 @@
+{
+  "characters": [
+    {
+      "id": "ichigo",
+      "path": "Assets/ImportedCharacters/Roster/ichigo/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/285620/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7"
+    },
+    {
+      "id": "ichigo_bankai",
+      "path": "Assets/ImportedCharacters/Roster/ichigo_bankai/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/284221/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7"
+    },
+    {
+      "id": "byakuya",
+      "path": "Assets/ImportedCharacters/Roster/byakuya/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/284223/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7"
+    },
+    {
+      "id": "rukia",
+      "path": "Assets/ImportedCharacters/Roster/rukia/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282998/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "uryu",
+      "path": "Assets/ImportedCharacters/Roster/uryu/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283003/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "chad",
+      "path": "Assets/ImportedCharacters/Roster/chad/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/psp/bleachheatthesoul7/asset/287216/",
+      "author": "Roxas358",
+      "game": "Bleach: Heat the Soul 7"
+    },
+    {
+      "id": "gin",
+      "path": "Assets/ImportedCharacters/Roster/gin/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282924/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "grimmjow",
+      "path": "Assets/ImportedCharacters/Roster/grimmjow/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282866/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "nel",
+      "path": "Assets/ImportedCharacters/Roster/nel/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282869/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "ulquiorra",
+      "path": "Assets/ImportedCharacters/Roster/ulquiorra/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283002/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "hitsugaya",
+      "path": "Assets/ImportedCharacters/Roster/hitsugaya/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282922/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "tosen",
+      "path": "Assets/ImportedCharacters/Roster/tosen/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283001/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "kenpachi",
+      "path": "Assets/ImportedCharacters/Roster/kenpachi/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282927/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "mayuri",
+      "path": "Assets/ImportedCharacters/Roster/mayuri/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282939/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "rangiku",
+      "path": "Assets/ImportedCharacters/Roster/rangiku/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282995/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "renji",
+      "path": "Assets/ImportedCharacters/Roster/renji/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282997/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "aizen",
+      "path": "Assets/ImportedCharacters/Roster/aizen/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282865/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "soifon",
+      "path": "Assets/ImportedCharacters/Roster/soifon/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/282999/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "szayel",
+      "path": "Assets/ImportedCharacters/Roster/szayel/model.dae",
+      "sourceUrl": "https://models.spriters-resource.com/wii/bleachvscrusade/asset/283000/",
+      "author": "Shadowth117",
+      "game": "Bleach: Versus Crusade"
+    },
+    {
+      "id": "kira",
+      "path": "Assets/ImportedCharacters/Roster/kira/source.prefab",
+      "sourceUrl": "https://thunderstore.io/c/lethal-company/p/TsuShi/IzuruKira/",
+      "author": "TsuShi",
+      "game": "BLEACH character model; IzuruKira mod 0.1.0"
+    }
+  ]
+}

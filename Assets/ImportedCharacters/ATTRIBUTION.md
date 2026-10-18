@@ -1,4 +1,15 @@
-# Downloaded character: Cha Yoruichi
+# Downloaded characters
+
+## Roster additions
+
+Twenty additional character models are listed individually in
+`docs/asset-sources/roster-models.json`, including source pages, game names,
+submitter credits and archive hashes. Nineteen are from Models Resource
+(Roxas358 / Shadowth117); Izuru Kira is from TsuShi's IzuruKira 0.1.0 mod.
+These are existing BLEACH game/character assets, not project-original artwork
+or CC0. Original rights remain with their respective owners.
+
+## Cha Yoruichi
 
 Creator / uploader credit: **anywhere 3D**
 https://sketchfab.com/stephanua.gr

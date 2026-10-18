@@ -48,3 +48,12 @@ Sketchfab 公開 API 標示 [CC BY 4.0](https://creativecommons.org/licenses/by/
 採 Apache-2.0，授權保留於 `ThirdPartyNotices/glTFast/LICENSE.md`。
 
 公開／開源候選與採用順序見 [open-resources.md](docs/asset-sources/open-resources.md)，涵蓋動畫、材質、卡通渲染與 BLEACH 資料庫；候選未視為已匯入素材。
+# 本輪角色模型整合
+
+已使用 21 名下載角色的骨架模型與貼圖，完整進度見
+[角色替換清單](docs/art-remake/ROSTER-REPLACEMENT.md)。
+Models Resource 的 19 名來源及 TsuShi 的吉良模型逐項列於
+[來源、署名與 SHA-256](docs/asset-sources/roster-models.json)。
+夜一的 CC BY 4.0 來源另列於
+[夜一模型紀錄](docs/asset-sources/yoruichi-model.json)。
+上述既有遊戲／角色資產沒有被改稱為專案原創、CC0 或開源作品。
